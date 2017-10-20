@@ -86,7 +86,7 @@ namespace fe
             float d2 = *((float*)data + 1);
             if (d2 > 0)
                 int qw = 0;
-            int t = (d1 - d2)* 10;
+            int t = int((d1 - d2) * 10);
             int f = t;
             if (f < 0)
                 f = -f;
@@ -109,12 +109,12 @@ namespace fe
 
             if (d1 == 0)
             {
-                color = 255 - d2 * 255;
+                color = int(255 - d2 * 255);
                 p.r = color;
                 p.g = color;
                 p.b = color;
             }
-            p.a = 255;            
+            p.a = 255;
         }
 
         void setPixel(unsigned char* data, const Pixel& p)
@@ -193,7 +193,7 @@ namespace fe
             return 255;
         }
     };
-    
+
     class PixelR8G8B8A8
     {
         /*

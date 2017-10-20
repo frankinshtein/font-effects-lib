@@ -49,13 +49,13 @@ typedef struct fe_grad
     unsigned char alpha[FE_GRAD_MAX_COLORS];
     float alphaPos[FE_GRAD_MAX_COLORS];
     int alphaNum;
-    
+
     fe_plane plane;
 } fe_grad;
 
 FONT_EFFECT_EXPORT
-void fe_gradient_create(struct fe_image *im, int width, int height, 
-    const struct fe_color *colors, const float* positions, int num,
-    const unsigned char *alpha, const float* alphaPositions, int alphaNum);
+void fe_gradient_create(struct fe_image* im, int width, int height,
+                        const struct fe_color* colors, const float* positions, int num,
+                        const unsigned char* alpha, const float* alphaPositions, int alphaNum);
 
 #endif //FONT_GRADIENT_H

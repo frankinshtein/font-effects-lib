@@ -26,7 +26,7 @@ typedef struct fe_image
     int h;
     int pitch;
     int bytespp;
-    uint8_t* data;  
+    uint8_t* data;
     FE_IMAGE_FORMAT format;
 
     free_image_fn free;
@@ -34,31 +34,31 @@ typedef struct fe_image
 
 
 FONT_EFFECT_EXPORT
-fe_image  fe_image_get_rect(const fe_image *im, int x, int y, int w, int h);
+fe_image  fe_image_get_rect(const fe_image* im, int x, int y, int w, int h);
 
 FONT_EFFECT_EXPORT
-void  fe_image_get_rect2(fe_image *, const fe_image *im, int x, int y, int w, int h);
+void  fe_image_get_rect2(fe_image*, const fe_image* im, int x, int y, int w, int h);
 
 FONT_EFFECT_EXPORT
-void   fe_image_create(fe_image *, int w, int h, FE_IMAGE_FORMAT);
+void   fe_image_create(fe_image*, int w, int h, FE_IMAGE_FORMAT);
 
 FONT_EFFECT_EXPORT
-void   fe_image_premultiply(fe_image *);
+void   fe_image_premultiply(fe_image*);
 
 FONT_EFFECT_EXPORT
-void    fe_image_copy_alloc(const fe_image *src, fe_image *dest);
+void    fe_image_copy_alloc(const fe_image* src, fe_image* dest);
 
 FONT_EFFECT_EXPORT
-void  fe_image_free(fe_image *dest);
+void  fe_image_free(fe_image* dest);
 
 FONT_EFFECT_EXPORT
-void   fe_image_copy(const fe_image *src, fe_image *dest);
+void   fe_image_copy(const fe_image* src, fe_image* dest);
 
 FONT_EFFECT_EXPORT
-void  fe_image_fill(fe_image *dest, const fe_color *color);
+void  fe_image_fill(fe_image* dest, const fe_color* color);
 
 FONT_EFFECT_EXPORT
-void  fe_image_blit(const fe_image *src,  fe_image *dest);
+void  fe_image_blit(const fe_image* src,  fe_image* dest);
 
 FONT_EFFECT_EXPORT
 void  fe_image_to_bgra(fe_image* src);

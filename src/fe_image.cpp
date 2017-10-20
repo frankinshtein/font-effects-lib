@@ -6,15 +6,15 @@
 
 using namespace fe;
 
-ImageData* asImage(fe_image *im);
-const ImageData* asImage(const fe_image *im);
+ImageData* asImage(fe_image* im);
+const ImageData* asImage(const fe_image* im);
 
-ImageData* asImage(fe_image *im)
+ImageData* asImage(fe_image* im)
 {
     return static_cast<ImageData*>(im);
 }
 
-const ImageData* asImage(const fe_image *im)
+const ImageData* asImage(const fe_image* im)
 {
     return static_cast<const ImageData*>(im);
 }
@@ -26,7 +26,7 @@ void image_free_malloc(fe_image* im)
     im->data = 0;
 }
 
-void fe_image_create(fe_image *im, int w, int h, FE_IMAGE_FORMAT f)
+void fe_image_create(fe_image* im, int w, int h, FE_IMAGE_FORMAT f)
 {
     int i = sizeof(*im);
     im->w = w;
@@ -38,36 +38,36 @@ void fe_image_create(fe_image *im, int w, int h, FE_IMAGE_FORMAT f)
     im->free = image_free_malloc;
 }
 
-void fe_image_free(fe_image *im)
+void fe_image_free(fe_image* im)
 {
     if (im->free)
         im->free(im);
 }
 
-fe_image fe_image_get_rect(const fe_image *im, int x, int y, int w, int h)
+fe_image fe_image_get_rect(const fe_image* im, int x, int y, int w, int h)
 {
     return asImage(im)->getRect(x, y, w, h);
 }
 
-void fe_image_get_rect2(fe_image *p, const fe_image *im, int x, int y, int w, int h)
+void fe_image_get_rect2(fe_image* p, const fe_image* im, int x, int y, int w, int h)
 {
     *p = asImage(im)->getRect(x, y, w, h);
 }
 
 
-void fe_image_copy(const fe_image *src, fe_image *dest)
+void fe_image_copy(const fe_image* src, fe_image* dest)
 {
     operations::copy(*asImage(src), *asImage(dest));
 }
 
-void fe_image_fill(fe_image *dest, const fe_color *color_)
+void fe_image_fill(fe_image* dest, const fe_color* color_)
 {
     const Color* color = static_cast<const Color*>(color_);
     operations::fill(*asImage(dest), *color);
 }
 
 
-void fe_image_copy_alloc(const fe_image *src, fe_image *dest)
+void fe_image_copy_alloc(const fe_image* src, fe_image* dest)
 {
     *dest = *src;
     dest->pitch = dest->w * dest->bytespp;
@@ -76,12 +76,12 @@ void fe_image_copy_alloc(const fe_image *src, fe_image *dest)
     fe_image_copy(src, dest);
 }
 
-void fe_image_blit(const fe_image *src, fe_image *dest)
+void fe_image_blit(const fe_image* src, fe_image* dest)
 {
     operations::blit(*asImage(src), *asImage(dest));
 }
 
-void fe_image_premultiply(fe_image *gl)
+void fe_image_premultiply(fe_image* gl)
 {
     operations::premultiply(*asImage(gl));
 }
@@ -91,13 +91,13 @@ int getBytesPerPixel(FE_IMAGE_FORMAT tf)
 {
     switch (tf)
     {
-    case FE_IMG_A8:
-        return 1;
-    case FE_IMG_B8G8R8A8:
-    case FE_IMG_R8G8B8A8:
-        return 4;
-    case FE_IMG_DISTANCE:
-        return 8;
+        case FE_IMG_A8:
+            return 1;
+        case FE_IMG_B8G8R8A8:
+        case FE_IMG_R8G8B8A8:
+            return 4;
+        case FE_IMG_DISTANCE:
+            return 8;
     }
     return 0;
 }

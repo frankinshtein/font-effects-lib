@@ -38,7 +38,7 @@ static void read_token(fe_state& s)
         char c = *s.data;
         if (c == ',')
             break;
-        if (c == '\n' || c==':')
+        if (c == '\n' || c == ':')
             break;
         if (c == 0)
             break;
@@ -55,7 +55,7 @@ static void read_token(fe_state& s)
                 s.error = true;
                 return;
             }
-            
+
             break;
         }
         s.data++;
@@ -67,7 +67,7 @@ static void read_token(fe_state& s)
     s.size--;
 }
 
-static void read_fixed(fe_state& s, const char *str)
+static void read_fixed(fe_state& s, const char* str)
 {
     s.token = s.data;
     while (*str)
@@ -79,7 +79,7 @@ static void read_fixed(fe_state& s, const char *str)
             s.error = true;
             return;
         }
-        
+
         if (c != *str)
         {
             s.error = true;
@@ -93,7 +93,7 @@ static void read_fixed(fe_state& s, const char *str)
 }
 
 
-static float read_float(fe_state &s)
+static float read_float(fe_state& s)
 {
     read_token(s);
     float v = 0;
@@ -104,14 +104,14 @@ static float read_float(fe_state &s)
 #define READ_FLOAT(state) read_float(state); CHECK_ERR()
 
 
-static int read_int(fe_state &s)
+static int read_int(fe_state& s)
 {
     read_token(s);
     return atoi(s.token);
 }
 #define READ_INT(state)   read_int(s); CHECK_ERR()
 
-static void* read_token_check(fe_state &s, const char *str)
+static void* read_token_check(fe_state& s, const char* str)
 {
     read_token(s);
     CHECK_ERR();
@@ -122,7 +122,7 @@ static void* read_token_check(fe_state &s, const char *str)
     return 0;
 }
 
-static void parse_color(const char *str, fe_color *c)
+static void parse_color(const char* str, fe_color* c)
 {
     int r, g, b, a;
     sscanf(str, "%02x%02x%02x%02x", &r, &g, &b, &a);
@@ -133,7 +133,7 @@ static void parse_color(const char *str, fe_color *c)
     c->a = a;
 }
 
-static void parse_alpha(const char *str, unsigned char *c)
+static void parse_alpha(const char* str, unsigned char* c)
 {
     int a;
     sscanf(str, "%02x", &a);
@@ -142,7 +142,7 @@ static void parse_alpha(const char *str, unsigned char *c)
 }
 
 
-fe_node* load_node(fe_state &s)
+fe_node* load_node(fe_state& s)
 {
     read_token(s);
     CHECK_ERR();
@@ -164,124 +164,124 @@ fe_node* load_node(fe_state &s)
     for (int i = 0; i < FE_MAX_PROPS; ++i)
         props[i] = READ_FLOAT(s);
 
-    
 
-    fe_node *node = 0;
+
+    fe_node* node = 0;
     switch (tp)
     {
-    case fe_node_type_image:
-        node = &fe_node_image_alloc()->base;
-        break;
+        case fe_node_type_image:
+            node = &fe_node_image_alloc()->base;
+            break;
 
-    case fe_node_type_image_fixed:
-        node = &fe_node_image_fixed_alloc()->base;
-        break;
+        case fe_node_type_image_fixed:
+            node = &fe_node_image_fixed_alloc()->base;
+            break;
 
-    case fe_node_type_fill:
-    {
-        fe_node_fill *nf = fe_node_fill_alloc();
-
-        node = &nf->base;
-
-        s.data++;
-        fe_grad *grad = &nf->grad;
-
-
-        //read colors
-        int colors = READ_INT(s);
-        grad->colorsNum = colors;
-        for (int i = 0; i < colors; ++i)
+        case fe_node_type_fill:
         {
+            fe_node_fill* nf = fe_node_fill_alloc();
+
+            node = &nf->base;
+
+            s.data++;
+            fe_grad* grad = &nf->grad;
+
+
+            //read colors
+            int colors = READ_INT(s);
+            grad->colorsNum = colors;
+            for (int i = 0; i < colors; ++i)
+            {
+                read_token(s);
+                CHECK_ERR();
+
+                fe_color* c = &grad->colors[i];
+
+                parse_color(s.token, c);
+
+                grad->colorsPos[i] = READ_FLOAT(s);
+            }
+
+            //read alpha
+            int alphaNum = READ_INT(s);
+            grad->alphaNum = alphaNum;
+            for (int i = 0; i < alphaNum; ++i)
+            {
+                read_token(s);
+                CHECK_ERR();
+
+                unsigned char* c = &grad->alpha[i];
+
+                parse_alpha(s.token, c);
+
+                grad->alphaPos[i] = READ_FLOAT(s);
+            }
+
+            grad->plane.a = READ_FLOAT(s);
+            grad->plane.b = READ_FLOAT(s);
+            grad->plane.d = READ_FLOAT(s);
+            grad->plane.scale = READ_FLOAT(s);
+
+        } break;
+
+        case fe_node_type_outline:
+        {
+            fe_node_outline* no = fe_node_outline_alloc();
+            node = &no->base;
+            no->rad = READ_FLOAT(s);
+            no->sharpness = READ_FLOAT(s);
+        }   break;
+
+        case fe_node_type_custom:
+        {
+            fe_node_custom* no = fe_node_custom_alloc();
+            node = &no->base;
+            no->tp = READ_INT(s);
+            no->p1 = READ_FLOAT(s);
+            no->p2 = READ_FLOAT(s);
+            no->p3 = READ_FLOAT(s);
+            no->p4 = READ_FLOAT(s);
+        }   break;
+
+        case fe_node_type_distance_field:
+        {
+            s.data++;
+            fe_node_distance_field* no = fe_node_distance_field_alloc();
+            node = &no->base;
+            no->rad = READ_FLOAT(s);
+        }   break;
+
+        case fe_node_type_mix:
+        {
+            fe_node_mix* no = fe_node_mix_alloc();
+            node = &no->base;
+        }   break;
+
+        case fe_node_type_stroke_simple:
+        {
+            fe_node* no = fe_node_stroke_simple_alloc();
+            node = no;
+        }   break;
+
+        case fe_node_type_subtract:
+        {
+            fe_node* no = fe_node_subtract_alloc();
+            node = no;
+        }   break;
+
+        case fe_node_type_out:
+        {
+            s.data++;
+
+            fe_node_out* no = fe_node_out_alloc();
+            node = &no->base;
             read_token(s);
             CHECK_ERR();
+            strcpy(no->name, s.token);
+        }   break;
 
-            fe_color *c = &grad->colors[i];
-
-            parse_color(s.token, c);
-
-            grad->colorsPos[i] = READ_FLOAT(s);
-        }
-        
-        //read alpha
-        int alphaNum = READ_INT(s);
-        grad->alphaNum = alphaNum;
-        for (int i = 0; i < alphaNum; ++i)
-        {
-            read_token(s);
-            CHECK_ERR();
-
-            unsigned char *c = &grad->alpha[i];
-
-            parse_alpha(s.token, c);
-
-            grad->alphaPos[i] = READ_FLOAT(s);
-        }
-
-        grad->plane.a = READ_FLOAT(s);
-        grad->plane.b = READ_FLOAT(s);
-        grad->plane.d = READ_FLOAT(s);
-        grad->plane.scale = READ_FLOAT(s);
-
-    } break;
-
-    case fe_node_type_outline:
-    {
-        fe_node_outline *no = fe_node_outline_alloc();
-        node = &no->base;
-        no->rad = READ_FLOAT(s);
-        no->sharpness = READ_FLOAT(s);
-    }   break;
-
-    case fe_node_type_custom:
-    {
-        fe_node_custom *no = fe_node_custom_alloc();
-        node = &no->base;
-        no->tp = READ_INT(s);
-        no->p1 = READ_FLOAT(s);
-        no->p2 = READ_FLOAT(s);
-        no->p3 = READ_FLOAT(s);
-        no->p4 = READ_FLOAT(s);
-    }   break;
-
-    case fe_node_type_distance_field:
-    {
-        s.data++;
-        fe_node_distance_field *no = fe_node_distance_field_alloc();
-        node = &no->base;
-        no->rad = READ_FLOAT(s);
-    }   break;
-
-    case fe_node_type_mix:
-    {
-        fe_node_mix *no = fe_node_mix_alloc();
-        node = &no->base;
-    }   break;
-
-    case fe_node_type_stroke_simple:
-    {
-        fe_node *no = fe_node_stroke_simple_alloc();
-        node = no;
-    }   break;
-
-    case fe_node_type_subtract:
-    {
-        fe_node *no = fe_node_subtract_alloc();
-        node = no;
-    }   break;
-
-    case fe_node_type_out:
-    {
-        s.data++;
-
-        fe_node_out *no = fe_node_out_alloc();
-        node = &no->base;        
-        read_token(s);
-        CHECK_ERR();
-        strcpy(no->name, s.token);
-    }   break;
-
-    default:
-        break;
+        default:
+            break;
     }
 
     node->x = x;
@@ -296,7 +296,7 @@ fe_node* load_node(fe_state &s)
     return node;
 }
 
-void* load_effect(fe_state &s, fe_effect *effect)
+void* load_effect(fe_state& s, fe_effect* effect)
 {
     read_fixed(s, "#");
     CHECK_ERR();
@@ -317,7 +317,7 @@ void* load_effect(fe_state &s, fe_effect *effect)
     CHECK_ERR();
 
     int num = 0;
-    const char *p = s.data;
+    const char* p = s.data;
     for (int i = 0; i < s.size; ++i)
     {
         if (*p == '*')
@@ -351,10 +351,10 @@ void* load_effect(fe_state &s, fe_effect *effect)
         ++p;
     }
 
-    
+
     fe_node* srcLast = effect->nodes[0];
     fe_node* destLast = effect->nodes[0];
-    while(*s.data == '*')
+    while (*s.data == '*')
     {
         s.data++;
         read_token(s);
@@ -392,8 +392,8 @@ fe_effect_bundle*  fe_bundle_load(const unsigned char* data, int size)
     if (!(data[0] == 'F' && data[1] == 'E' && data[2] == 'F'))
         return 0;
 
-    
-    char *copy = (char*)malloc(size + 2);
+
+    char* copy = (char*)malloc(size + 2);
     *(copy + size) = 0;
     memcpy(copy, data, size);
 
@@ -406,14 +406,14 @@ fe_effect_bundle*  fe_bundle_load(const unsigned char* data, int size)
     s.error = false;
 
     //next_line(s);
-     
+
     read_token(s);
     if (strcmp(s.token, "FEF1"))
         return 0;
 
-    char *p = s.data;
+    char* p = s.data;
     int num_effects = 0;
-    for (int i = 0; i < s.size; ++i) 
+    for (int i = 0; i < s.size; ++i)
     {
         if (*p == '#')
         {
@@ -425,7 +425,7 @@ fe_effect_bundle*  fe_bundle_load(const unsigned char* data, int size)
 
     //LOGF("num %d", num_effects);
 
-    fe_effect_bundle *bundle = (fe_effect_bundle*)malloc(sizeof(fe_effect_bundle));
+    fe_effect_bundle* bundle = (fe_effect_bundle*)malloc(sizeof(fe_effect_bundle));
 
     //read_token(s);
     //CHECK_ERR();
@@ -435,7 +435,7 @@ fe_effect_bundle*  fe_bundle_load(const unsigned char* data, int size)
 
     for (int n = 0; n < num_effects; ++n)
     {
-        fe_effect *effect = &bundle->effect[n];
+        fe_effect* effect = &bundle->effect[n];
         load_effect(s, effect);
         CHECK_ERR();
     }
@@ -450,7 +450,7 @@ void fe_bundle_free(fe_effect_bundle* bundle)
 {
     for (int i = 0; i < bundle->num; ++i)
     {
-        fe_effect *ef = &bundle->effect[i];        
+        fe_effect* ef = &bundle->effect[i];
         fe_effect_free(ef);
     }
 
@@ -460,8 +460,8 @@ void fe_bundle_free(fe_effect_bundle* bundle)
 
 struct sstate
 {
-    char *begin;
-    char *data;
+    char* begin;
+    char* data;
 
     int free;
     int capacity;
@@ -469,17 +469,17 @@ struct sstate
     char tmp[16];
 };
 
-fe_effect* fe_bundle_get_effect(fe_effect_bundle *bundle, int i)
+fe_effect* fe_bundle_get_effect(fe_effect_bundle* bundle, int i)
 {
     return &bundle->effect[i];
 }
 
-fe_effect* fe_bundle_get_effect_by_name(fe_effect_bundle *bundle, const char *name)
+fe_effect* fe_bundle_get_effect_by_name(fe_effect_bundle* bundle, const char* name)
 {
     int num = bundle->num;
     for (int i = 0; i < num; ++i)
     {
-        fe_effect *ef = &bundle->effect[i];
+        fe_effect* ef = &bundle->effect[i];
         if (!strcmp(ef->id, name))
             return ef;
     }

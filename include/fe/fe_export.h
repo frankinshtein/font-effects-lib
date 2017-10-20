@@ -8,23 +8,23 @@
 #else
 #  ifndef FONT_EFFECT_EXPORT
 #    ifdef font_effect_EXPORTS
-        /* We are building this library */
-#ifdef _MSC_VER 
+/* We are building this library */
+#ifdef _MSC_VER
 #      define FONT_EFFECT_EXPORT extern "C"  __declspec(dllexport)
 #elif APPLE
-#      define FONT_EFFECT_EXPORT extern "C"  __attribute__((visibility("default"))) 
+#      define FONT_EFFECT_EXPORT extern "C"  __attribute__((visibility("default")))
 #else
 #      define FONT_EFFECT_EXPORT extern "C"
 #endif
 #    else
-        /* We are using this library */
-#      define FONT_EFFECT_EXPORT extern "C" 
+/* We are using this library */
+#      define FONT_EFFECT_EXPORT extern "C"
 //__declspec(dllimport)
 #    endif
 #  endif
 
 #  ifndef FONT_EFFECT_NO_EXPORT
-#    define FONT_EFFECT_NO_EXPORT 
+#    define FONT_EFFECT_NO_EXPORT
 #  endif
 #endif
 

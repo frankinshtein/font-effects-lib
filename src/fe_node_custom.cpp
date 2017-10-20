@@ -14,26 +14,26 @@
 #include "fe/fe_effect.h"
 using namespace fe;
 
-ImageData* asImage(fe_image *im);
-const ImageData* asImage(const fe_image *im);
+ImageData* asImage(fe_image* im);
+const ImageData* asImage(const fe_image* im);
 
-fe_im get_mixed_image(const fe_node *node, const fe_args *args);
+fe_im get_mixed_image(const fe_node* node, const fe_args* args);
 
 
 
-fe_im fe_get_custom_image(const fe_node_custom *node, const fe_args *args)
+fe_im fe_get_custom_image(const fe_node_custom* node, const fe_args* args)
 {
     fe_im mixed = get_mixed_image(&node->base, args);
     if (mixed.image.w == 0)
         return mixed;
-   // return mixed;
+    // return mixed;
 
     int nw = mixed.image.w + 2;
     int nh = mixed.image.h + 2;
 
-    int *data = (int*)malloc(nw * nh * sizeof(int));
+    int* data = (int*)malloc(nw * nh * sizeof(int));
     memset(data, 0, nw * nh * sizeof(int));
-    
+
     int w = mixed.image.w;
     int h = mixed.image.h;
 
@@ -43,9 +43,9 @@ fe_im fe_get_custom_image(const fe_node_custom *node, const fe_args *args)
 
     fe_image src = mixed.image;
 
-    
-    float f = 1.44f/4;
-    float z = 0.8f/4;
+
+    float f = 1.44f / 4;
+    float z = 0.8f / 4;
     for (int y = 0; y < h; ++y)
     {
         for (int x = 0; x < w; ++x)
@@ -57,19 +57,19 @@ fe_im fe_get_custom_image(const fe_node_custom *node, const fe_args *args)
             int qy = y;// +1;
 
             int* p = data;
-            data[qy * nw + qx    ] += v*f;
-            data[qy * nw + qx + 1] += v*z;
-            data[qy * nw + qx + 2] += v*f;
+            data[qy * nw + qx    ] += static_cast<int>(v * f);
+            data[qy * nw + qx + 1] += static_cast<int>(v * z);
+            data[qy * nw + qx + 2] += static_cast<int>(v * f);
 
             qy += 1;
-            data[qy * nw + qx    ] += v*z;
-            data[qy * nw + qx + 1] += v*z;
-            data[qy * nw + qx + 2] += v*z;
+            data[qy * nw + qx    ] += static_cast<int>(v * z);
+            data[qy * nw + qx + 1] += static_cast<int>(v * z);
+            data[qy * nw + qx + 2] += static_cast<int>(v * z);
 
             qy += 1;
-            data[qy * nw + qx    ] += v*f;
-            data[qy * nw + qx + 1] += v*z;
-            data[qy * nw + qx + 2] += v*f;
+            data[qy * nw + qx    ] += static_cast<int>(v * f);
+            data[qy * nw + qx + 1] += static_cast<int>(v * z);
+            data[qy * nw + qx + 2] += static_cast<int>(v * f);
         }
     }
 
@@ -81,12 +81,12 @@ fe_im fe_get_custom_image(const fe_node_custom *node, const fe_args *args)
     {
         for (int x = 0; x < nw; ++x)
         {
-            int &v = data[x + y * nw];
+            int& v = data[x + y * nw];
             v /= 255;
             if (v > 255)
                 v = 255;
 
-            unsigned char &a = res.data[x + res.pitch * y];
+            unsigned char& a = res.data[x + res.pitch * y];
             int tx = x - 1;
             int ty = y - 1;
             if (tx >= w)
@@ -98,7 +98,7 @@ fe_im fe_get_custom_image(const fe_node_custom *node, const fe_args *args)
             if (ty < 0)
                 ty = 0;
             unsigned char oa = src.data[tx * src.bytespp + ty * src.pitch + off];
-            a = (v * oa)/255;
+            a = (v * oa) / 255;
         }
     }
 

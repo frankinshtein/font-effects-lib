@@ -14,18 +14,18 @@ typedef struct fe_effect
 
 
 FONT_EFFECT_EXPORT
-struct fe_node* fe_effect_find_node(const fe_effect *ef, int id);
+struct fe_node* fe_effect_find_node(const fe_effect* ef, int id);
 
 FONT_EFFECT_EXPORT
-struct fe_node* fe_effect_find_node_by_type(const fe_effect *ef, int tp);
+struct fe_node* fe_effect_find_node_by_type(const fe_effect* ef, int tp);
 
 FONT_EFFECT_EXPORT
-struct fe_node* fe_effect_get_node(const fe_effect *ef, int i);
+struct fe_node* fe_effect_get_node(const fe_effect* ef, int i);
 
 FONT_EFFECT_EXPORT
-const char* fe_effect_get_name(const fe_effect *ef);
+const char* fe_effect_get_name(const fe_effect* ef);
 
 
-void fe_effect_free(fe_effect *);
+void fe_effect_free(fe_effect*);
 
 #endif

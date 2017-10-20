@@ -203,7 +203,7 @@ namespace fe
 
                 Pixel pD;
                 destPixelFormat.getPixel(destData, pD, OPERATOR_ARGS_PASS);
-                
+
                 float k = pS.a / float(pD.a);
                 pD.r = std::max(0, int(pD.r - pD.r * k));
                 pD.g = std::max(0, int(pD.g - pD.g * k));
@@ -282,7 +282,7 @@ namespace fe
             applyOperationT(op, s, d, src, dest); \
         } \
         break;
-         
+
         template<class Src, class Op>
         void SwitchSrcDestT(const Op& op, const Src& s, const ImageData& src, const ImageData& dest)
         {

@@ -6,7 +6,7 @@
 
 typedef struct fe_effect_bundle
 {
-    struct fe_effect *effect;
+    struct fe_effect* effect;
     int num;
 } fe_effect_bundle;
 
@@ -17,9 +17,9 @@ FONT_EFFECT_EXPORT
 void fe_bundle_free(fe_effect_bundle*);
 
 FONT_EFFECT_EXPORT
-struct fe_effect* fe_bundle_get_effect(fe_effect_bundle *, int i);
+struct fe_effect* fe_bundle_get_effect(fe_effect_bundle*, int i);
 
 FONT_EFFECT_EXPORT
-struct fe_effect* fe_bundle_get_effect_by_name(fe_effect_bundle *, const char *name);
+struct fe_effect* fe_bundle_get_effect_by_name(fe_effect_bundle*, const char* name);
 
 #endif

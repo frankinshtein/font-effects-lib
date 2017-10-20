@@ -28,19 +28,20 @@ typedef struct fe_args
     float scale;
 } fe_args;
 
-typedef fe_im (*get_node_image)(const struct fe_node *, const struct fe_args*);
+typedef fe_im(*get_node_image)(const struct fe_node*, const struct fe_args*);
 
 
 
-typedef struct fe_pin 
+typedef struct fe_pin
 {
-    const struct fe_node *node;
+    const struct fe_node* node;
 } fe_pin;
 
 #define FE_MAX_PINS 5
 #define FE_MAX_PROPS 4
 
-typedef struct fe_node {
+typedef struct fe_node
+{
 
     int id;
     int type;
@@ -67,7 +68,7 @@ enum fe_node_type
     fe_node_type_fill = 3,
     fe_node_type_outline = 4,
     fe_node_type_mix = 5,
-    fe_node_type_distance_field = 6,    
+    fe_node_type_distance_field = 6,
     fe_node_type_subtract = 7,
     fe_node_type_out = 50,
 
@@ -170,16 +171,16 @@ void _fe_node_connect(const fe_node*, fe_node*, int pin);
 FONT_EFFECT_EXPORT int     fe_node_get_in_node_id(const fe_node*, int);
 
 FONT_EFFECT_EXPORT
-fe_im fe_get_fill(const fe_node_fill *node, const fe_args *args);
+fe_im fe_get_fill(const fe_node_fill* node, const fe_args* args);
 
 FONT_EFFECT_EXPORT
-fe_im fe_get_image(const fe_node_image *node, const fe_args *args);
+fe_im fe_get_image(const fe_node_image* node, const fe_args* args);
 
 FONT_EFFECT_EXPORT
-void fe_node_apply(float scale, const fe_im *gl, const fe_node* node, int size, fe_im *res);
+void fe_node_apply(float scale, const fe_im* gl, const fe_node* node, int size, fe_im* res);
 
 
-
+/*
 
 typedef struct fe_nodec
 {
@@ -191,5 +192,6 @@ typedef struct fe_nodec_fill
 {
     fe_nodec base;
 };
+*/
 
 #endif

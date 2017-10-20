@@ -3,8 +3,8 @@
 /*internal*/
 struct fe_state
 {
-    char *token;
-    char *data;
+    char* token;
+    char* data;
     int size;
     bool error;
 };
