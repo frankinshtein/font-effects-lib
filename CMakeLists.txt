@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (font-effect)
+project (font-effects-lib)
 
 set(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -26,5 +26,5 @@ add_library(font-effect
 include_directories(${ROOT}/src)
 include_directories(${ROOT}/include)
 
-#add_executable(font-effect-test test/main.c)
-#target_link_libraries(font-effect-test font-effect)
+add_executable(font-effect-test test/main.cpp test/tga.h test/tga.cpp)
+target_link_libraries(font-effect-test font-effect)

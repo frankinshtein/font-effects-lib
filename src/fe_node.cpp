@@ -19,11 +19,11 @@ const ImageData* asImage(const fe_image* im);
 
 #define ABS(v) (v < 0 ? - v : v)
 
-#if 1 //def _DEBUG
+#ifdef SAVE_NODES
 
 FONT_EFFECT_EXPORT
 bool  fe_image_safe_tga(const fe_image* src, const char* fname);
-#define SAVE_NODES
+
 #endif
 
 
