@@ -11,7 +11,7 @@ void to_bgra(fe::ImageData* src)
     //(fe::ImageData*)
 }
 
-bool safe_tga(const fe_image *src_, const char* fname)
+bool save_tga(const fe_image *src_, const char* fname)
 {
     FILE *fh = fopen(fname, "wb");
     if (!fh)

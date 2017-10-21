@@ -15,6 +15,7 @@ int main()
 
     FILE* fh = fopen("example.fe", "rb");
     int size = fread(buff, 1, BUFF_SIZE, fh);
+    fclose(fh);
 
     fe_effect_bundle* bundle = fe_bundle_load(buff, size);
     printf("NUM: %d\n", bundle->num);
@@ -37,7 +38,7 @@ int main()
     fe_node_apply(1.0f, &im, out_node, font_size, &res);
     
     //res.image is PREMULTIPLIED ALPHA
-    safe_tga(&res.image, "dest.tga");
+    save_tga(&res.image, "dest.tga");
 
     fe_image_free(&res.image);
 

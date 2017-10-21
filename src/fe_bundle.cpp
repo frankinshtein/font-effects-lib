@@ -296,6 +296,44 @@ fe_node* load_node(fe_state& s)
     return node;
 }
 
+void next_line(fe_state &s)
+{
+    if (s.size <= 0)
+    {
+        s.error = true;
+        return;
+    }
+    if (*s.data == '\n')
+    {
+        s.data++;
+        s.size--;
+        return;
+    }
+
+
+
+    if (*s.data == '\r')
+    {
+        s.data++;
+        s.size--;
+
+        if (s.size <= 0)
+        {
+            s.error = true;
+            return;
+        }
+
+        if (*s.data == '\n')
+        {
+            s.data++;
+            s.size--;
+            return;
+        }
+    }
+
+    s.error = true;
+}
+
 void* load_effect(fe_state& s, fe_effect* effect)
 {
     read_fixed(s, "#");
@@ -308,12 +346,13 @@ void* load_effect(fe_state& s, fe_effect* effect)
     read_fixed(s, "size:");
     CHECK_ERR();
 
-    read_token(s);
+    effect->size = read_int(s);
+
+
+    read_fixed(s, "@nodes");
     CHECK_ERR();
-    effect->size = atoi(s.token);
 
-
-    read_fixed(s, "@nodes\n");
+    next_line(s);
     CHECK_ERR();
 
     int num = 0;
@@ -336,7 +375,9 @@ void* load_effect(fe_state& s, fe_effect* effect)
         CHECK_ERR();
     }
 
-    read_fixed(s, "@edges\n");
+    read_fixed(s, "@edges");
+    CHECK_ERR();
+    next_line(s);
     CHECK_ERR();
 
 
