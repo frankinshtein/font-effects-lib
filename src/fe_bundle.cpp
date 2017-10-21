@@ -142,7 +142,7 @@ static void parse_alpha(const char* str, unsigned char* c)
 }
 
 
-fe_node* load_node(fe_state& s)
+static fe_node* load_node(fe_state& s)
 {
     read_token(s);
     CHECK_ERR();
@@ -296,7 +296,7 @@ fe_node* load_node(fe_state& s)
     return node;
 }
 
-void next_line(fe_state &s)
+static void next_line(fe_state &s)
 {
     if (s.size <= 0)
     {
@@ -334,7 +334,7 @@ void next_line(fe_state &s)
     s.error = true;
 }
 
-void* load_effect(fe_state& s, fe_effect* effect)
+static void* load_effect(fe_state& s, fe_effect* effect)
 {
     read_fixed(s, "#");
     CHECK_ERR();
@@ -346,7 +346,7 @@ void* load_effect(fe_state& s, fe_effect* effect)
     read_fixed(s, "size:");
     CHECK_ERR();
 
-    effect->size = read_int(s);
+    effect->size = READ_INT(s);
 
 
     read_fixed(s, "@nodes");
@@ -377,6 +377,7 @@ void* load_effect(fe_state& s, fe_effect* effect)
 
     read_fixed(s, "@edges");
     CHECK_ERR();
+
     next_line(s);
     CHECK_ERR();
 

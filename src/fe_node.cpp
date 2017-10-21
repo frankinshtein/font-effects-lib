@@ -1,16 +1,17 @@
-#include "fe/fe_gradient.h"
-#include <stdio.h>
-#include "fe/fe_image.h"
 #include "fe/fe_node.h"
+#include "fe/fe_gradient.h"
+#include "fe/fe_image.h"
+#include "fe/fe_effect.h"
+#include "ImageDataOperations.h"
+#include <stdio.h>
 #include <assert.h>
 #include <memory.h>
 #include <stdlib.h>
-#include "ImageDataOperations.h"
 #include <math.h>
 #include <float.h>
 #include <limits.h>
 
-#include "fe/fe_effect.h"
+
 using namespace fe;
 
 ImageData* asImage(fe_image* im);
@@ -20,10 +21,8 @@ const ImageData* asImage(const fe_image* im);
 #define ABS(v) (v < 0 ? - v : v)
 
 #ifdef SAVE_NODES
-
 FONT_EFFECT_EXPORT
-bool  fe_image_safe_tga(const fe_image* src, const char* fname);
-
+bool  fe_image_save_tga(const fe_image* src, const char* fname);
 #endif
 
 
@@ -37,16 +36,6 @@ public:
     short y;
 };
 
-
-void init_grad(fe_grad& f)
-{
-    f.plane.a = 0;
-    f.plane.b = 1.0f;
-    f.plane.d = 0;
-    f.colors[0] = { 255, 255, 255, 255 };
-    f.colorsPos[0] = 0;
-    f.colorsNum = 1;
-}
 
 template <class T>
 class PixelR8G8B8A8_GradApply : public T
@@ -226,7 +215,7 @@ inline T lerp(T a, T b, float v)
     return T(a + (b - a) * v);
 }
 
-void buildSDF(const ImageData& src, float rad, float sharp, bool outer, ImageData& dest, bool dist)
+static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, ImageData& dest, bool dist)
 {
     const float DX = 1.0f;
     const float DY = 1.0f;
@@ -405,7 +394,7 @@ void buildSDF(const ImageData& src, float rad, float sharp, bool outer, ImageDat
     }
 }
 
-void buildSDF_(const ImageData& src, float rad, float, bool outer, ImageData& dest)
+static void buildSDF_(const ImageData& src, float rad, float, bool outer, ImageData& dest)
 {
     char* field = new char[src.w * src.h];
 
@@ -569,68 +558,10 @@ public:
     }
 };
 
-void create_grad(fe_apply_grad* dest, const fe_grad* gr, int size)
+static void create_grad(fe_apply_grad* dest, const fe_grad* gr, int size)
 {
     fe_gradient_create(&dest->image, size, 1, gr->colors, gr->colorsPos, gr->colorsNum, gr->alpha, gr->alphaPos, gr->alphaNum);
     dest->plane = gr->plane;
-}
-
-
-char* readu(char*& data, char code)
-{
-    char* p = data;
-    while (*data)
-    {
-        if (*data == code)
-        {
-            *data = 0;
-            ++data;
-            return p;
-        }
-        ++data;
-    }
-    return 0;
-}
-
-void tobegin(char*& data)
-{
-    while (char c = *data)
-    {
-        if (c == '\n' || c == '\t' || c == '\r' || c == ' ')
-        {
-            *data = 0;
-            ++data;
-        }
-        else
-            break;
-    }
-}
-
-void readline(char*& data, char*& key, char*& value)
-{
-    tobegin(data);
-    char* str = data;
-    while (char c = *data)
-    {
-        if (c == '=')
-        {
-            *data = 0;
-            ++data;
-            break;
-        }
-        ++data;
-    }
-
-    while (char c = *data)
-    {
-        if (c == '=')
-        {
-            *data = 0;
-            ++data;
-            break;
-        }
-        ++data;
-    }
 }
 
 

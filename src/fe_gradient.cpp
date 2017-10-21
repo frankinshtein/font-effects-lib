@@ -136,6 +136,4 @@ void  fe_gradient_create(struct fe_image* im, int width, int height,
     {
         memcpy(im->data + im->pitch * y, im->data, im->pitch);
     }
-
-
 }
