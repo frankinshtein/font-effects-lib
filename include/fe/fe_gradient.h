@@ -43,12 +43,12 @@ typedef struct fe_color
 typedef struct fe_grad
 {
     fe_color colors[FE_GRAD_MAX_COLORS];
-    float colorsPos[FE_GRAD_MAX_COLORS];
-    int colorsNum;
+    float colors_pos[FE_GRAD_MAX_COLORS];
+    int colors_num;
 
     unsigned char alpha[FE_GRAD_MAX_COLORS];
-    float alphaPos[FE_GRAD_MAX_COLORS];
-    int alphaNum;
+    float alpha_pos[FE_GRAD_MAX_COLORS];
+    int alpha_num;
 
     fe_plane plane;
 } fe_grad;

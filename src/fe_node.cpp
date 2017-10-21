@@ -560,7 +560,7 @@ public:
 
 static void create_grad(fe_apply_grad* dest, const fe_grad* gr, int size)
 {
-    fe_gradient_create(&dest->image, size, 1, gr->colors, gr->colorsPos, gr->colorsNum, gr->alpha, gr->alphaPos, gr->alphaNum);
+    fe_gradient_create(&dest->image, size, 1, gr->colors, gr->colors_pos, gr->colors_num, gr->alpha, gr->alpha_pos, gr->alpha_num);
     dest->plane = gr->plane;
 }
 
@@ -1124,13 +1124,13 @@ fe_node_fill* fe_node_fill_alloc()
     fe_node_fill* node = (fe_node_fill*)malloc(sizeof(fe_node_fill));
     fe_node_init(&node->base, fe_node_type_fill, (get_node_image)fe_get_fill);
 
-    node->grad.colorsNum = 1;
+    node->grad.colors_num = 1;
     node->grad.colors[0].value = 0xffffffff;
-    node->grad.colorsPos[0] = 0;
+    node->grad.colors_pos[0] = 0;
 
-    node->grad.alphaNum = 1;
+    node->grad.alpha_num = 1;
     node->grad.alpha[0] = 255;
-    node->grad.alphaPos[0] = 0;
+    node->grad.alpha_pos[0] = 0;
 
 
     node->grad.plane.a = 0;

@@ -189,7 +189,7 @@ static fe_node* load_node(fe_state& s)
 
             //read colors
             int colors = READ_INT(s);
-            grad->colorsNum = colors;
+            grad->colors_num = colors;
             for (int i = 0; i < colors; ++i)
             {
                 read_token(s);
@@ -199,13 +199,13 @@ static fe_node* load_node(fe_state& s)
 
                 parse_color(s.token, c);
 
-                grad->colorsPos[i] = READ_FLOAT(s);
+                grad->colors_pos[i] = READ_FLOAT(s);
             }
 
             //read alpha
-            int alphaNum = READ_INT(s);
-            grad->alphaNum = alphaNum;
-            for (int i = 0; i < alphaNum; ++i)
+            int alpha_num = READ_INT(s);
+            grad->alpha_num = alpha_num;
+            for (int i = 0; i < alpha_num; ++i)
             {
                 read_token(s);
                 CHECK_ERR();
@@ -214,7 +214,7 @@ static fe_node* load_node(fe_state& s)
 
                 parse_alpha(s.token, c);
 
-                grad->alphaPos[i] = READ_FLOAT(s);
+                grad->alpha_pos[i] = READ_FLOAT(s);
             }
 
             grad->plane.a = READ_FLOAT(s);
@@ -286,8 +286,8 @@ static fe_node* load_node(fe_state& s)
 
     node->x = x;
     node->y = y;
-    node->visX = visX;
-    node->visY = visY;
+    node->vis_x = visX;
+    node->vis_y = visY;
 
     node->id = id;
     node->type = tp;

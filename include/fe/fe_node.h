@@ -48,8 +48,8 @@ typedef struct fe_node
     int x;
     int y;
 
-    int visX;
-    int visY;
+    int vis_x;
+    int vis_y;
 
     get_node_image get_image;
     struct fe_pin in[FE_MAX_PINS];

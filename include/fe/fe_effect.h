@@ -4,7 +4,7 @@
 
 typedef struct fe_effect
 {
-    char id[24];
+    char id[32];
 
     struct fe_node** nodes;
     int num;
