@@ -34,6 +34,21 @@ const char* fe_effect_get_name(const fe_effect* ef)
     return ef->id;
 }
 
+const char* fe_effect_get_text(const fe_effect* ef)
+{
+    return ef->text;
+}
+
+const char* fe_effect_get_path_font(const fe_effect* ef)
+{
+    return ef->path_font;
+}
+
+const char* fe_effect_get_path_back(const fe_effect* ef)
+{
+    return ef->path_back;
+}
+
 void fe_effect_free(fe_effect* effect)
 {
     for (int i = 0; i < effect->num; ++i)

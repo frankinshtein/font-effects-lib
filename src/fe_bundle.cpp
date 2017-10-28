@@ -1,11 +1,13 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "fe/fe_bundle.h"
+#include "fe/fe_node.h"
+#include "fe/fe_effect.h"
+#include "fe_parser.h"
 #include <memory.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "fe/fe_node.h"
-#include "fe/fe_effect.h"
-#include "fe_parser.h"
 #include <assert.h>
 //#include <windows.h>
 
@@ -92,7 +94,6 @@ static void read_fixed(fe_state& s, const char* str)
     }
 }
 
-
 static float read_float(fe_state& s)
 {
     read_token(s);
@@ -101,14 +102,13 @@ static float read_float(fe_state& s)
     return v;
 }
 
-#define READ_FLOAT(state) read_float(state); CHECK_ERR()
-
-
 static int read_int(fe_state& s)
 {
     read_token(s);
     return atoi(s.token);
 }
+
+#define READ_FLOAT(state) read_float(state); CHECK_ERR()
 #define READ_INT(state)   read_int(s); CHECK_ERR()
 
 static void* read_token_check(fe_state& s, const char* str)
@@ -142,7 +142,7 @@ static void parse_alpha(const char* str, unsigned char* c)
 }
 
 
-static fe_node* load_node(fe_state& s)
+fe_node* fe_load_node(fe_state& s)
 {
     read_token(s);
     CHECK_ERR();
@@ -334,8 +334,23 @@ static void next_line(fe_state &s)
     s.error = true;
 }
 
-static void* load_effect(fe_state& s, fe_effect* effect)
+
+void* fe_load_param(fe_state& s, const char *name, char *str)
 {
+    read_fixed(s, name);
+    CHECK_ERR();
+    read_token(s);
+    CHECK_ERR();
+    strcpy(str, s.token);
+    return 0;
+}
+
+void* fe_load_effect(fe_state& s, fe_effect* effect)
+{
+    effect->text[0] = 0;
+    effect->path_back[0] = 0;
+    effect->path_font[0] = 0;
+
     read_fixed(s, "#");
     CHECK_ERR();
 
@@ -348,6 +363,15 @@ static void* load_effect(fe_state& s, fe_effect* effect)
 
     effect->size = READ_INT(s);
 
+
+    fe_load_param(s, "font:", effect->path_font);    
+    CHECK_ERR();
+
+    fe_load_param(s, "back:", effect->path_back);
+    CHECK_ERR();
+
+    fe_load_param(s, "text:", effect->text);
+    CHECK_ERR();
 
     read_fixed(s, "@nodes");
     CHECK_ERR();
@@ -371,7 +395,7 @@ static void* load_effect(fe_state& s, fe_effect* effect)
 
     for (int i = 0; i < num; ++i)
     {
-        effect->nodes[i] = load_node(s);
+        effect->nodes[i] = fe_load_node(s);
         CHECK_ERR();
     }
 
@@ -478,7 +502,7 @@ fe_effect_bundle*  fe_bundle_load(const unsigned char* data, int size)
     for (int n = 0; n < num_effects; ++n)
     {
         fe_effect* effect = &bundle->effect[n];
-        load_effect(s, effect);
+        fe_load_effect(s, effect);
         CHECK_ERR();
     }
 
@@ -487,6 +511,9 @@ fe_effect_bundle*  fe_bundle_load(const unsigned char* data, int size)
     return bundle;
 }
 
+
+
+void fe_effect_free(fe_effect*);
 
 void fe_bundle_free(fe_effect_bundle* bundle)
 {
