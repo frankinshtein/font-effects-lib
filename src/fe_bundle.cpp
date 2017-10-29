@@ -27,6 +27,46 @@ static void error()
 #define CHECK_ERR() if (s.error) error()
 
 
+static void read_token_end_line(fe_state& s)
+{
+    s.token = s.data;
+    while (true)
+    {
+        if (s.size <= 0)
+        {
+            //s.error = true;
+            return;
+        }
+        char c = *s.data;
+        if (c == '\n')
+            break;
+        if (c == 0)
+            break;
+        if (c == '\r')
+        {
+            *s.data = 0;
+            if (s.size > 0)
+            {
+                s.data++;
+                s.size--;
+            }
+            else
+            {
+                s.error = true;
+                return;
+            }
+
+            break;
+        }
+        s.data++;
+        s.size--;
+    }
+
+    *s.data = 0;
+    s.data++;
+    s.size--;
+}
+
 static void read_token(fe_state& s)
 {
     s.token = s.data;
@@ -339,7 +379,7 @@ void* fe_load_param(fe_state& s, const char *name, char *str)
 {
     read_fixed(s, name);
     CHECK_ERR();
-    read_token(s);
+    read_token_end_line(s);
     CHECK_ERR();
     strcpy(str, s.token);
     return 0;
