@@ -575,6 +575,7 @@ void fe_im_empty(fe_im& empty)
     empty.image.bytespp = 4;
     empty.image.pitch = 4;
     empty.image.format = FE_IMG_R8G8B8A8;
+    empty.image.free = 0;
 }
 
 fe_im get_image(const fe_node* node, const fe_args* args)
@@ -629,7 +630,7 @@ fe_im get_mixed_image(const fe_node* node, const fe_args* args)
 
     if (num == 1)
     {
-        return res[0];
+      //  return res[0];
     }
 
     int r = INT_MIN;
@@ -763,7 +764,7 @@ fe_im fe_get_fill(const fe_node_fill* node, const fe_args* args)
         }
     }
 
-
+    fe_image_free(&src.image);
     fe_image_free(&ag.image);
     //fe_image_safe_tga(&dest.image, "d:/a.tga");
     return dest;

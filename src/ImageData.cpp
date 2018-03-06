@@ -10,6 +10,7 @@ namespace fe
         pitch = 0;
         data = 0;
         format = TF_UNDEFINED;
+        free = 0;
     }
 
     ImageData::ImageData(int W, int H, int Pitch, FE_IMAGE_FORMAT Format, void* Data)//: w(W), h(H), pitch(Pitch), format(Format), data((unsigned char*)Data)
@@ -19,6 +20,7 @@ namespace fe
         pitch = Pitch;
         data = (uint8_t*)Data;
         format = Format;
+        free = 0;
 
         bytespp = getBytesPerPixel(Format);
     }
