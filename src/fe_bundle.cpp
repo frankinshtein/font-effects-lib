@@ -436,6 +436,7 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
     for (int i = 0; i < num; ++i)
     {
         effect->nodes[i] = fe_load_node(s);
+        effect->nodes[i]->effect = effect;
         CHECK_ERR();
     }
 

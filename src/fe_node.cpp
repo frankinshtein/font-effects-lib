@@ -688,6 +688,7 @@ void fe_node_init(fe_node* node, int tp, get_node_image f)
     node->x = 0;
     node->y = 0;
     node->type = tp;
+    node->effect = 0;
     for (int i = 0; i < FE_MAX_PINS; ++i)
         node->in[i].node = 0;
 
@@ -1191,15 +1192,24 @@ int fe_node_get_in_node_id(const fe_node* node, int i)
     return 0;
 }
 
-void fe_node_apply(float scale, const fe_im* gl, const fe_node* node, int size, fe_im* res)
+void fe_node_apply(int font_size, const fe_im* gl, const fe_node* node,  fe_im* res)
+{
+    fe_args args;
+    args.size = font_size;
+    args.base = *gl;
+    args.base.image.free = 0;//can't delete not owner
+    args.scale = font_size / (float)node->effect->size;
+    *res = get_image(node, &args);
+}
+
+
+
+void _fe_node_apply(float scale, const fe_im* gl, const fe_node* node, int size, fe_im* res)
 {
     fe_args args;
     args.size = size;
     args.base = *gl;
     args.base.image.free = 0;//can't delete not owner
     args.scale = scale;
-
-    //operations::premultiply(*asImage(gl));
-
     *res = get_image(node, &args);
 }

@@ -56,8 +56,7 @@ typedef struct fe_node
 
     float properties[FE_MAX_PROPS];
 
-    //void *node_data;
-    //int size;
+    struct fe_effect *effect;
 } fe_node;
 
 
@@ -177,7 +176,10 @@ FONT_EFFECT_EXPORT
 fe_im fe_get_image(const fe_node_image* node, const fe_args* args);
 
 FONT_EFFECT_EXPORT
-void fe_node_apply(float scale, const fe_im* gl, const fe_node* node, int size, fe_im* res);
+void fe_node_apply(int font_size, const fe_im* gl, const fe_node* node, fe_im* res);
+
+FONT_EFFECT_EXPORT
+void _fe_node_apply(float scale, const fe_im* gl, const fe_node* node, int size, fe_im* res);
 
 
 /*
