@@ -630,6 +630,8 @@ fe_im get_mixed_image(const fe_node* node, const fe_args* args)
 
     if (num == 1)
     {
+        //TODO, optimize, return already mixed image
+        //commented because returned value should be freed from editor
       //  return res[0];
     }
 
