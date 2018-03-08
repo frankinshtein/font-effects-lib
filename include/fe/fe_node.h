@@ -43,10 +43,10 @@ typedef struct fe_pin
 typedef struct fe_node
 {
     int id;
+    int flags;
     int type;
     int x;
-    int y;
-    int flags;
+    int y;    
 
     int vis_x;
     int vis_y;
