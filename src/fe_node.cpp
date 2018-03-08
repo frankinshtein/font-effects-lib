@@ -690,6 +690,7 @@ void fe_node_init(fe_node* node, int tp, get_node_image f)
     node->get_image = f;
     node->x = 0;
     node->y = 0;
+    node->flags = 0;
     node->type = tp;
     node->effect = 0;
     for (int i = 0; i < FE_MAX_PINS; ++i)
@@ -1076,6 +1077,7 @@ fe_node_out*         fe_node_out_alloc()
     fe_node_out* node = (fe_node_out*)malloc(sizeof(fe_node_out));
     fe_node_init(&node->base, fe_node_type_out, (get_node_image)fe_get_out_image);
     node->name[0] = 0;
+
     return node;
 }
 

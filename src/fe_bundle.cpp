@@ -195,10 +195,12 @@ fe_node* fe_load_node(fe_state& s)
     int tp = atoi(s.token);
 
     int id = READ_INT(s);
+    int flags = READ_INT(s);
     int x = READ_INT(s);
     int y = READ_INT(s);
     int visX = READ_INT(s);
     int visY = READ_INT(s);
+    
 
     float props[FE_MAX_PROPS];
     for (int i = 0; i < FE_MAX_PROPS; ++i)
@@ -328,10 +330,16 @@ fe_node* fe_load_node(fe_state& s)
     node->y = y;
     node->vis_x = visX;
     node->vis_y = visY;
+    node->flags = flags;
 
     node->id = id;
     node->type = tp;
     memcpy(node->properties, props, sizeof(props));
+
+    /*
+    if (s.size > 0 && s.token[0] == '*')
+        return 
+        */
 
     return node;
 }
@@ -436,8 +444,8 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
     for (int i = 0; i < num; ++i)
     {
         effect->nodes[i] = fe_load_node(s);
-        effect->nodes[i]->effect = effect;
         CHECK_ERR();
+        effect->nodes[i]->effect = effect;        
     }
 
     read_fixed(s, "@edges");
