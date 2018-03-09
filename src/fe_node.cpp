@@ -633,6 +633,9 @@ fe_im get_mixed_image(const fe_node* node, const fe_args* args)
         //TODO, optimize, return already mixed image
         //commented because returned value should be freed from editor
       //  return res[0];
+
+        if (res[0].image.format == FE_IMG_DISTANCE)
+            return res[0];
     }
 
     int r = INT_MIN;
