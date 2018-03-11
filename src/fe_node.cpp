@@ -804,7 +804,7 @@ fe_im fe_get_mix_image(const fe_node_image* node, const fe_args* args)
 }
 
 
-fe_im fe_get_custom_image(const fe_node_custom* node, const fe_args* args);
+fe_im fe_get_custom_image(const fe_node* node, const fe_args* args);
 
 fe_im fe_get_outline_image(const fe_node_outline* node, const fe_args* args)
 {
@@ -844,7 +844,7 @@ fe_im fe_get_distance_field(const fe_node_distance_field* node, const fe_args* a
 
     int s = sizeof(node->base);
 
-    float rad = node->base.properties[0] * sqrtf(args->scale);
+    float rad = node->base.properties_float[0] * sqrtf(args->scale);
 
     bool outer = rad > 0;
     if (!outer)
@@ -933,7 +933,7 @@ fe_im fe_get_stroke_simple(const fe_node* node, const fe_args* args)
 
     fe_image src = mixed.image;
 
-    float sp = node->properties[0];
+    float sp = node->properties_float[0];
     bool invert = false;
     if (sp < 0)
     {
@@ -1093,23 +1093,11 @@ fe_node_outline* fe_node_outline_alloc()
     return node;
 }
 
-fe_node_custom*          fe_node_custom_alloc()
-{
-    fe_node_custom* node = (fe_node_custom*)malloc(sizeof(fe_node_custom));
-    fe_node_init(&node->base, fe_node_type_custom, (get_node_image)fe_get_custom_image);
-    node->tp = 1;
-    node->p1 = 0.0f;
-    node->p2 = 0.0f;
-    node->p3 = 0.0f;
-    node->p4 = 0.0f;
-    return node;
-}
-
 fe_node_distance_field*  fe_node_distance_field_alloc()
 {
     fe_node_distance_field* node = (fe_node_distance_field*)malloc(sizeof(fe_node_distance_field));
     fe_node_init(&node->base, fe_node_type_distance_field, (get_node_image)fe_get_distance_field);
-    node->base.properties[0] = 1.0f;
+    node->base.properties_float[0] = 10.0f;
     return node;
 }
 
@@ -1169,12 +1157,16 @@ fe_node* fe_node_alloc(int node_type)
             return (fe_node*)fe_node_distance_field_alloc();
         case fe_node_type_out:
             return (fe_node*)fe_node_out_alloc();
-        case fe_node_type_custom:
-            return (fe_node*)fe_node_custom_alloc();
         case fe_node_type_stroke_simple:
             return fe_node_stroke_simple_alloc();
         case fe_node_type_subtract:
             return fe_node_subtract_alloc();
+        default:
+        {
+            fe_node* node = (fe_node*)malloc(sizeof(fe_node));
+            fe_node_init(node, nt, (get_node_image)fe_get_custom_image);
+            return node;
+        }
     }
     return 0;
 }

@@ -21,9 +21,9 @@ fe_im get_mixed_image(const fe_node* node, const fe_args* args);
 
 
 
-fe_im fe_get_custom_image(const fe_node_custom* node, const fe_args* args)
+fe_im fe_get_custom_image(const fe_node* node, const fe_args* args)
 {
-    fe_im mixed = get_mixed_image(&node->base, args);
+    fe_im mixed = get_mixed_image(node, args);
     if (mixed.image.w == 0)
         return mixed;
     // return mixed;

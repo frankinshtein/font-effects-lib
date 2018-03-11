@@ -204,6 +204,10 @@ fe_node* fe_load_node(fe_state& s)
     float props[FE_MAX_PROPS];
     for (int i = 0; i < FE_MAX_PROPS; ++i)
         props[i] = READ_FLOAT(s);
+
+    int props_int[FE_MAX_PROPS];
+    for (int i = 0; i < FE_MAX_PROPS; ++i)
+        props_int[i] = READ_INT(s);
     
     read_token(s);
     CHECK_ERR();
@@ -276,18 +280,6 @@ fe_node* fe_load_node(fe_state& s)
             no->rad = READ_FLOAT(s);
             no->sharpness = READ_FLOAT(s);
         }   break;
-
-        case fe_node_type_custom:
-        {
-            fe_node_custom* no = fe_node_custom_alloc();
-            node = &no->base;
-            no->tp = READ_INT(s);
-            no->p1 = READ_FLOAT(s);
-            no->p2 = READ_FLOAT(s);
-            no->p3 = READ_FLOAT(s);
-            no->p4 = READ_FLOAT(s);
-        }   break;
-
         default:
         {
             node = fe_node_alloc(tp);
@@ -304,7 +296,8 @@ fe_node* fe_load_node(fe_state& s)
 
     node->id = id;
     node->type = tp;
-    memcpy(node->properties, props, sizeof(props));
+    memcpy(node->properties_float, props, sizeof(props));
+    memcpy(node->properties_int, props_int, sizeof(props_int));
 
     /*
     if (s.size > 0 && s.token[0] == '*')

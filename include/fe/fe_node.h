@@ -50,7 +50,9 @@ typedef struct fe_node
 
     get_node_image get_image;
     struct fe_pin in[FE_MAX_PINS];
-    float properties[FE_MAX_PROPS];
+    float properties_float[FE_MAX_PROPS];
+    int   properties_int[FE_MAX_PROPS];
+
     struct fe_effect *effect;
 
     char name[16];    
@@ -61,17 +63,16 @@ typedef struct fe_node
 
 enum fe_node_type
 {
-    fe_node_type_image = 1,
-    fe_node_type_image_fixed = 2,
-    fe_node_type_fill = 3,
-    fe_node_type_outline = 4,
-    fe_node_type_mix = 5,
-    fe_node_type_distance_field = 6,
-    fe_node_type_subtract = 7,
-    fe_node_type_out = 50,
-
-    fe_node_type_custom = 100,
-    fe_node_type_stroke_simple = 101,
+    fe_node_type_image           = 1,
+    fe_node_type_image_fixed     = 2,
+    fe_node_type_fill            = 3,
+    fe_node_type_outline         = 4,
+    fe_node_type_mix             = 5,
+    fe_node_type_distance_field  = 6,
+    fe_node_type_subtract        = 7,
+    fe_node_type_stroke_simple   = 10,
+    fe_node_type_out             = 50,
+    fe_node_type_custom          = 100,    
 };
 
 typedef struct  fe_node_image
@@ -101,17 +102,6 @@ typedef struct  fe_node_outline
     float sharpness;
 } fe_node_outline;
 
-
-typedef struct  fe_node_custom
-{
-    fe_node base;
-    int tp;
-    float p1;
-    float p2;
-    float p3;
-    float p4;
-} fe_node_custom;
-
 typedef struct  fe_node_mix
 {
     fe_node base;
@@ -133,14 +123,6 @@ typedef struct fe_node_data_fill
     fe_grad grad;
 } fe_node_data_fill;
 
-typedef struct fe_node_data_distance_field
-{
-    float rad;
-} fe_node_data_distance_field;
-
-typedef struct fe_node_data_out
-{
-} fe_node_data_out;
 
 FONT_EFFECT_EXPORT fe_node_fill*            fe_node_fill_alloc();
 FONT_EFFECT_EXPORT fe_node_image*           fe_node_image_alloc();
@@ -150,7 +132,6 @@ FONT_EFFECT_EXPORT fe_node*                 fe_node_stroke_simple_alloc();
 FONT_EFFECT_EXPORT fe_node*                 fe_node_subtract_alloc();
 FONT_EFFECT_EXPORT fe_node_out*             fe_node_out_alloc();
 FONT_EFFECT_EXPORT fe_node_outline*         fe_node_outline_alloc();
-FONT_EFFECT_EXPORT fe_node_custom*          fe_node_custom_alloc();
 FONT_EFFECT_EXPORT fe_node_distance_field*  fe_node_distance_field_alloc();
 FONT_EFFECT_EXPORT fe_node*                 fe_node_alloc(int node_type);
 
@@ -176,20 +157,5 @@ void fe_node_apply(int font_size, const fe_im* gl, const fe_node* node, fe_im* r
 
 FONT_EFFECT_EXPORT
 void _fe_node_apply(float scale, const fe_im* gl, const fe_node* node, int size, fe_im* res);
-
-
-/*
-
-typedef struct fe_nodec
-{
-    int num;
-    fe_nodec* left;
-};
-
-typedef struct fe_nodec_fill
-{
-    fe_nodec base;
-};
-*/
 
 #endif
