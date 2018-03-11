@@ -182,6 +182,8 @@ static void parse_alpha(const char* str, unsigned char* c)
 }
 
 
+void fe_node_init(fe_node* node, int tp, get_node_image f);
+
 fe_node* fe_load_node(fe_state& s)
 {
     read_token(s);
@@ -192,31 +194,31 @@ fe_node* fe_load_node(fe_state& s)
     s.token++;//skip *
     CHECK_ERR();
 
-    int tp = atoi(s.token);
+    fe_node nd;   
+    fe_node_init(&nd, 0, 0);
 
-    int id = READ_INT(s);
-    int flags = READ_INT(s);
-    int x = READ_INT(s);
-    int y = READ_INT(s);
-    int visX = READ_INT(s);
-    int visY = READ_INT(s);
+    nd.type = atoi(s.token);
+    nd.id = READ_INT(s);
+    nd.flags = READ_INT(s);
+    nd.x = READ_INT(s);
+    nd.y = READ_INT(s);
+    nd.vis_x = READ_INT(s);
+    nd.vis_y = READ_INT(s);
+    
 
-    float props[FE_MAX_PROPS];
     for (int i = 0; i < FE_MAX_PROPS; ++i)
-        props[i] = READ_FLOAT(s);
-
-    int props_int[FE_MAX_PROPS];
+        nd.properties_float[i] = READ_FLOAT(s);
     for (int i = 0; i < FE_MAX_PROPS; ++i)
-        props_int[i] = READ_INT(s);
+        nd.properties_int[i] = READ_INT(s);
     
     read_token(s);
     CHECK_ERR();
-    char name[16];
-    strcpy(name, s.token);
+
+    strcpy(nd.name, s.token);
 
 
     fe_node* node = 0;
-    switch (tp)
+    switch (nd.type)
     {
         case fe_node_type_image:
             node = &fe_node_image_alloc()->base;
@@ -280,29 +282,16 @@ fe_node* fe_load_node(fe_state& s)
             no->rad = READ_FLOAT(s);
             no->sharpness = READ_FLOAT(s);
         }   break;
+
         default:
         {
-            node = fe_node_alloc(tp);
+            node = fe_node_alloc(nd.type);
             break;
         }
     }
-
-    node->x = x;
-    node->y = y;
-    node->vis_x = visX;
-    node->vis_y = visY;
-    node->flags = flags;
-    strcpy(node->name, name);
-
-    node->id = id;
-    node->type = tp;
-    memcpy(node->properties_float, props, sizeof(props));
-    memcpy(node->properties_int, props_int, sizeof(props_int));
-
-    /*
-    if (s.size > 0 && s.token[0] == '*')
-        return 
-        */
+        
+    nd.get_image = node->get_image;
+    memcpy(node, &nd, sizeof(nd));
 
     return node;
 }
