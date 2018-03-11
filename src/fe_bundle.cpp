@@ -200,12 +200,15 @@ fe_node* fe_load_node(fe_state& s)
     int y = READ_INT(s);
     int visX = READ_INT(s);
     int visY = READ_INT(s);
-    
 
     float props[FE_MAX_PROPS];
     for (int i = 0; i < FE_MAX_PROPS; ++i)
         props[i] = READ_FLOAT(s);
-
+    
+    read_token(s);
+    CHECK_ERR();
+    char name[16];
+    strcpy(name, s.token);
 
 
     fe_node* node = 0;
@@ -285,45 +288,11 @@ fe_node* fe_load_node(fe_state& s)
             no->p4 = READ_FLOAT(s);
         }   break;
 
-        case fe_node_type_distance_field:
-        {
-            s.data++;
-            fe_node_distance_field* no = fe_node_distance_field_alloc();
-            node = &no->base;
-            no->rad = READ_FLOAT(s);
-        }   break;
-
-        case fe_node_type_mix:
-        {
-            fe_node_mix* no = fe_node_mix_alloc();
-            node = &no->base;
-        }   break;
-
-        case fe_node_type_stroke_simple:
-        {
-            fe_node* no = fe_node_stroke_simple_alloc();
-            node = no;
-        }   break;
-
-        case fe_node_type_subtract:
-        {
-            fe_node* no = fe_node_subtract_alloc();
-            node = no;
-        }   break;
-
-        case fe_node_type_out:
-        {
-            s.data++;
-
-            fe_node_out* no = fe_node_out_alloc();
-            node = &no->base;
-            read_token(s);
-            CHECK_ERR();
-            strcpy(no->name, s.token);
-        }   break;
-
         default:
+        {
+            node = fe_node_alloc(tp);
             break;
+        }
     }
 
     node->x = x;
@@ -331,6 +300,7 @@ fe_node* fe_load_node(fe_state& s)
     node->vis_x = visX;
     node->vis_y = visY;
     node->flags = flags;
+    strcpy(node->name, name);
 
     node->id = id;
     node->type = tp;

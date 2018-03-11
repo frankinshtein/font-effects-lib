@@ -46,17 +46,16 @@ typedef struct fe_node
     int flags;
     int type;
     int x;
-    int y;    
-
-    int vis_x;
-    int vis_y;
+    int y;            
 
     get_node_image get_image;
     struct fe_pin in[FE_MAX_PINS];
-
     float properties[FE_MAX_PROPS];
-
     struct fe_effect *effect;
+
+    char name[16];    
+    int vis_x;
+    int vis_y;
 } fe_node;
 
 
@@ -121,13 +120,11 @@ typedef struct  fe_node_mix
 typedef struct  fe_node_out
 {
     fe_node base;
-    char name[16];
 } fe_node_out;
 
 typedef struct  fe_node_distance_field
 {
     fe_node base;
-    float rad;
 } fe_node_distance_field;
 
 
@@ -143,7 +140,6 @@ typedef struct fe_node_data_distance_field
 
 typedef struct fe_node_data_out
 {
-    char* name;
 } fe_node_data_out;
 
 FONT_EFFECT_EXPORT fe_node_fill*            fe_node_fill_alloc();

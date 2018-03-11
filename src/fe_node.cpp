@@ -696,6 +696,7 @@ void fe_node_init(fe_node* node, int tp, get_node_image f)
     node->flags = 0;
     node->type = tp;
     node->effect = 0;
+    node->name[0] = 0;
     for (int i = 0; i < FE_MAX_PINS; ++i)
         node->in[i].node = 0;
 
@@ -843,7 +844,7 @@ fe_im fe_get_distance_field(const fe_node_distance_field* node, const fe_args* a
 
     int s = sizeof(node->base);
 
-    float rad = node->rad * sqrtf(args->scale);
+    float rad = node->base.properties[0] * sqrtf(args->scale);
 
     bool outer = rad > 0;
     if (!outer)
@@ -1079,7 +1080,6 @@ fe_node_out*         fe_node_out_alloc()
 {
     fe_node_out* node = (fe_node_out*)malloc(sizeof(fe_node_out));
     fe_node_init(&node->base, fe_node_type_out, (get_node_image)fe_get_out_image);
-    node->name[0] = 0;
 
     return node;
 }
@@ -1109,7 +1109,7 @@ fe_node_distance_field*  fe_node_distance_field_alloc()
 {
     fe_node_distance_field* node = (fe_node_distance_field*)malloc(sizeof(fe_node_distance_field));
     fe_node_init(&node->base, fe_node_type_distance_field, (get_node_image)fe_get_distance_field);
-    node->rad = 1.0f;
+    node->base.properties[0] = 1.0f;
     return node;
 }
 
@@ -1175,9 +1175,6 @@ fe_node* fe_node_alloc(int node_type)
             return fe_node_stroke_simple_alloc();
         case fe_node_type_subtract:
             return fe_node_subtract_alloc();
-
-        default:
-            break;
     }
     return 0;
 }
