@@ -375,15 +375,23 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
     effect->size = READ_INT(s);
 
 
-    fe_load_param(s, "font:", effect->path_font);    
-    CHECK_ERR();
+    while (s.data[0] != '@')
+    {
+        read_token(s);
+        CHECK_ERR();
 
-    fe_load_param(s, "back:", effect->path_back);
-    CHECK_ERR();
-
-    fe_load_param(s, "text:", effect->text);
-    CHECK_ERR();
-
+        char *param = 0;
+        if (!strcmp(s.token, "font"))
+            param = effect->path_font;
+        if (!strcmp(s.token, "back"))
+            param = effect->path_back;
+        if (!strcmp(s.token, "text"))
+            param = effect->text;
+        read_token_end_line(s);
+        CHECK_ERR();
+        strcpy(param, s.token);
+    }
+    
     read_fixed(s, "@nodes");
     CHECK_ERR();
 
@@ -486,7 +494,7 @@ fe_effect_bundle*  fe_bundle_load(const unsigned char* data, int size)
     //next_line(s);
 
     read_token(s);
-    if (strcmp(s.token, "FEF1"))
+    if (strcmp(s.token, "FEF2"))
         return 0;
 
     char* p = s.data;
