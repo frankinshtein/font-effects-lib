@@ -10,10 +10,10 @@ public:
     Color() {}
     Color(unsigned char R, unsigned char G, unsigned char B, unsigned char A)
     {
-        r = R;
-        g = G;
-        b = B;
-        a = A;
+        rgba.r = R;
+        rgba.g = G;
+        rgba.b = B;
+        rgba.a = A;
     }
     Color(const fe_color& c) { *static_cast<fe_color*>(this) = c; }
 };

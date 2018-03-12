@@ -111,10 +111,10 @@ namespace fe
         void blitColored(const ImageData& src, const ImageData& dest, const Color& c)
         {
             Pixel p;
-            p.r = c.r;
-            p.g = c.g;
-            p.b = c.b;
-            p.a = c.a;
+            p.r = c.rgba.r;
+            p.g = c.rgba.g;
+            p.b = c.rgba.b;
+            p.a = c.rgba.a;
 
             op_blit_colored op(p);
             applyOperation(op, src, dest);
@@ -152,10 +152,10 @@ namespace fe
         void fill(ImageData& dest, const Color& color)
         {
             op_fill fill;
-            fill.color.r = color.r;
-            fill.color.g = color.g;
-            fill.color.b = color.b;
-            fill.color.a = color.a;
+            fill.color.r = color.rgba.r;
+            fill.color.g = color.rgba.g;
+            fill.color.b = color.rgba.b;
+            fill.color.a = color.rgba.a;
 
             applyOperation(fill, dest);
         }

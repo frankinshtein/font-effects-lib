@@ -167,10 +167,10 @@ static void parse_color(const char* str, fe_color* c)
     int r, g, b, a;
     sscanf(str, "%02x%02x%02x%02x", &r, &g, &b, &a);
 
-    c->r = r;
-    c->g = g;
-    c->b = b;
-    c->a = a;
+    c->rgba.r = r;
+    c->rgba.g = g;
+    c->rgba.b = b;
+    c->rgba.a = a;
 }
 
 static void parse_alpha(const char* str, unsigned char* c)
@@ -214,7 +214,7 @@ fe_node* fe_load_node(fe_state& s)
     read_token(s);
     CHECK_ERR();
 
-    strcpy(nd.name, s.token);
+    strcpy_s(nd.name, s.token);
 
 
     fe_node* node = 0;
@@ -334,17 +334,6 @@ static void next_line(fe_state &s)
     s.error = true;
 }
 
-
-void* fe_load_param(fe_state& s, const char *name, char *str)
-{
-    read_fixed(s, name);
-    CHECK_ERR();
-    read_token_end_line(s);
-    CHECK_ERR();
-    strcpy(str, s.token);
-    return 0;
-}
-
 void* fe_load_effect(fe_state& s, fe_effect* effect)
 {
     effect->text[0] = 0;
@@ -356,7 +345,7 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
 
     read_token(s);
     CHECK_ERR();
-    strcpy(effect->id, s.token);
+    strcpy_s(effect->id, s.token);
 
     read_fixed(s, "size:");
     CHECK_ERR();
@@ -370,15 +359,25 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
         CHECK_ERR();
 
         char *param = 0;
+        int len = 0;
         if (!strcmp(s.token, "font"))
+        {
+            len = sizeof(effect->path_font);
             param = effect->path_font;
+        }
         if (!strcmp(s.token, "back"))
+        {
+            len = sizeof(effect->path_back);
             param = effect->path_back;
+        }
         if (!strcmp(s.token, "text"))
+        {
+            len = sizeof(effect->text);
             param = effect->text;
+        }
         read_token_end_line(s);
         CHECK_ERR();
-        strcpy(param, s.token);
+        strcpy_s(param, len, s.token);
     }
     
     read_fixed(s, "@nodes");
@@ -460,8 +459,9 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
 }
 
 FONT_EFFECT_EXPORT
-fe_effect_bundle*  fe_bundle_load(const unsigned char* data, int size)
+fe_effect_bundle*  fe_bundle_load(const void* data_, int size)
 {
+    const unsigned char *data = (const unsigned char *)data_;
     if (size < 4)
         return 0;
     if (!(data[0] == 'F' && data[1] == 'E' && data[2] == 'F'))

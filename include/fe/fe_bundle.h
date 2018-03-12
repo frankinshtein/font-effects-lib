@@ -11,7 +11,7 @@ typedef struct fe_effect_bundle
 } fe_effect_bundle;
 
 FONT_EFFECT_EXPORT
-fe_effect_bundle* fe_bundle_load(const unsigned char* data, int size);
+fe_effect_bundle* fe_bundle_load(const void* data, int size);
 
 FONT_EFFECT_EXPORT
 void fe_bundle_free(fe_effect_bundle*);

@@ -78,9 +78,9 @@ void  fe_gradient_create(struct fe_image* im, int width, int height,
             colorsPosB = *colorPositions * width;
             colorDist = colorsPosB - colorsPosA;
 
-            dr = colorB.r - colorA.r;
-            dg = colorB.g - colorA.g;
-            db = colorB.b - colorA.b;
+            dr = colorB.rgba.r - colorA.rgba.r;
+            dg = colorB.rgba.g - colorA.rgba.g;
+            db = colorB.rgba.b - colorA.rgba.b;
 
 
             ++colorPositions;
@@ -123,9 +123,9 @@ void  fe_gradient_create(struct fe_image* im, int width, int height,
 
 
 
-        data[0] = (unsigned char)(colorA.r + dr * colorT);
-        data[1] = (unsigned char)(colorA.g + dg * colorT);
-        data[2] = (unsigned char)(colorA.b + db * colorT);
+        data[0] = (unsigned char)(colorA.rgba.r + dr * colorT);
+        data[1] = (unsigned char)(colorA.rgba.g + dg * colorT);
+        data[2] = (unsigned char)(colorA.rgba.b + db * colorT);
         data[3] = (unsigned char)(alphaA + da * alphaT);
 
 

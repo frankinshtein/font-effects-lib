@@ -27,13 +27,13 @@ typedef struct fe_color
 {
     union
     {
-        struct
+        struct rgba_color
         {
             uint8_t r;
             uint8_t g;
             uint8_t b;
             uint8_t a;
-        };
+        } rgba;
         //uint32_t argb;
         uint32_t value;
     };
