@@ -8,6 +8,12 @@
 #include "fe/fe_effect.h"
 #include "tga.h"
 
+void _debug_image_created(fe_image *)
+{}
+
+void _debug_image_deleted(fe_image *)
+{}
+
 int main()
 {
     const int BUFF_SIZE = 100000;
@@ -34,8 +40,7 @@ int main()
 
     fe_im res;
 
-    int font_size = 100;
-    fe_node_apply(1.0f, &im, out_node, font_size, &res);
+    fe_node_apply(100, &im, out_node, &res);
     
     //res.image is PREMULTIPLIED ALPHA
     save_tga(&res.image, "dest.tga");
