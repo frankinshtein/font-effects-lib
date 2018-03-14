@@ -9,11 +9,11 @@ typedef struct fe_effect
     char text[32];
     char path_font[256];//todo opt    
     char path_back[256];//todo opt
+    float distance;
 
     struct fe_node** nodes;
     int num;
     int size;
-
 } fe_effect;
 
 

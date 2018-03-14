@@ -13,6 +13,11 @@ namespace fe
         free = 0;
     }
 
+    ImageData::ImageData(const fe_image& b)
+    {
+        *((fe_image*)this) = b;
+    }
+
     ImageData::ImageData(int W, int H, int Pitch, FE_IMAGE_FORMAT Format, void* Data)//: w(W), h(H), pitch(Pitch), format(Format), data((unsigned char*)Data)
     {
         w = W;

@@ -20,6 +20,7 @@ namespace fe
     {
     public:
         ImageData();
+        ImageData(const fe_image& b);
         ImageData(int W, int H, int Pitch, FE_IMAGE_FORMAT Format, void* Data = 0);
         ImageData(const ImageData& b, void* Data);
         ~ImageData();

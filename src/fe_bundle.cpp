@@ -339,6 +339,7 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
     effect->text[0] = 0;
     effect->path_back[0] = 0;
     effect->path_font[0] = 0;
+    effect->distance = 1.0f;
 
     read_fixed(s, "#");
     CHECK_ERR();
@@ -358,6 +359,12 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
         read_token(s);
         CHECK_ERR();
 
+        if (!strcmp(s.token, "distance"))
+        {
+            effect->distance = READ_FLOAT(s);
+            continue;
+        }
+
         char *param = 0;
         int len = 0;
         if (!strcmp(s.token, "font"))
@@ -375,6 +382,9 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
             len = sizeof(effect->text);
             param = effect->text;
         }
+
+        
+
         read_token_end_line(s);
         CHECK_ERR();
         strcpy_s(param, len, s.token);
