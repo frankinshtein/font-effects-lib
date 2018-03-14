@@ -19,6 +19,21 @@ FILE *f = fopen("d:/log.txt", "w");
 #define LOG(d) fputs(d,f); fflush(f)
 */
 
+
+template <size_t N>
+static void safe_strcpy(char(&dest)[N], const char* src)
+{
+    for (int i = 0; i < N; ++i)
+        dest[i] = src[i];
+}
+
+static void safe_strcpy(char *dest, int N, const char* src)
+{
+    for (int i = 0; i < N; ++i)
+        dest[i] = src[i];
+}
+
+
 static void error()
 {
     assert(!"fe parse error");
@@ -214,7 +229,7 @@ fe_node* fe_load_node(fe_state& s)
     read_token(s);
     CHECK_ERR();
 
-    strcpy_s(nd.name, s.token);
+    safe_strcpy(nd.name, s.token);
 
 
     fe_node* node = 0;
@@ -346,7 +361,7 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
 
     read_token(s);
     CHECK_ERR();
-    strcpy_s(effect->id, s.token);
+    safe_strcpy(effect->id, s.token);
 
     read_fixed(s, "size:");
     CHECK_ERR();
@@ -387,7 +402,7 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
 
         read_token_end_line(s);
         CHECK_ERR();
-        strcpy_s(param, len, s.token);
+        safe_strcpy(param, len, s.token);
     }
     
     read_fixed(s, "@nodes");
