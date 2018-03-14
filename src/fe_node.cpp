@@ -1195,7 +1195,7 @@ void fe_node_apply(int font_size, const fe_im* gl, const fe_node* node,  fe_im* 
     args.size = font_size;
     args.base = *gl;
     args.base.image.free = 0;//can't delete not owner
-    args.scale = font_size / (float)node->effect->size;
+    args.scale = font_size / 100.0;
     *res = get_image(node, &args);
 }
 
