@@ -153,7 +153,16 @@ FONT_EFFECT_EXPORT
 fe_im fe_get_image(const fe_node_image* node, const fe_args* args);
 
 FONT_EFFECT_EXPORT
-void fe_node_apply(int font_size, const fe_im* gl, const fe_node* node, fe_im* res);
+bool fe_node_apply(
+    int font_size, 
+    int x, int y, 
+    int w, int h, FE_IMAGE_FORMAT format, int pitch, const void *data,
+    const fe_node* node, fe_im* res);
+
+
+//same as fe_node_apply, but using struct for source glyph image
+FONT_EFFECT_EXPORT
+bool fe_node_apply2(int font_size, const fe_im* gl, const fe_node* node, fe_im* res);
 
 FONT_EFFECT_EXPORT
 void _fe_node_apply(float scale, const fe_im* gl, const fe_node* node, int size, fe_im* res);

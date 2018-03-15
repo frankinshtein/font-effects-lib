@@ -40,7 +40,7 @@ int main()
 
     fe_im res;
 
-    fe_node_apply(100, &im, out_node, &res);
+    fe_node_apply2(100, &im, out_node, &res);
     
     //res.image is PREMULTIPLIED ALPHA
     save_tga(&res.image, "dest.tga");

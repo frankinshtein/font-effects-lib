@@ -25,6 +25,16 @@ FONT_EFFECT_EXPORT
 bool  fe_image_save_tga(const fe_image* src, const char* fname);
 #endif
 
+#ifdef MAX
+#undef MAX
+#endif
+
+#ifdef MIN
+#undef MIN
+#endif
+
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 
 class P
@@ -232,6 +242,7 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
     if (src.bytespp == 4)
         off = 3;
 
+    /*
     auto I = [ = ](int x, int y)
     {
         assert(x >= 0 && x < src.w);
@@ -239,7 +250,10 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
         unsigned char v = src.data[x * src.bytespp + y * src.pitch + off];
         return v != 0;
     };
+    */
+#define I(X, Y) (src.data[X * src.bytespp + Y * src.pitch + off] != 0)
 
+    /*
     auto V = [ = ](int x, int y)
     {
         assert(x >= 0 && x < src.w);
@@ -247,6 +261,9 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
         unsigned char v = src.data[x * src.bytespp + y * src.pitch + off];
         return v;
     };
+    */
+
+#define V(X, Y) (src.data[X * src.bytespp + Y * src.pitch + off])
 
     P* p = (P*)malloc(h * w * sizeof(P));
 
@@ -257,7 +274,9 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
         dest.pitch = src.w * dest.bytespp;
     }
 
-    auto sub = [ = ](int x, int y) {return x + y * w; };
+    //auto sub = [ = ](int x, int y) {return x + y * w; };
+
+#define SUB(X, Y) (X + Y * w)
 
     P zero;
     zero.d1 = 1000.0f;
@@ -284,7 +303,7 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
                 if (I(x - 1, y) != I(x, y) || I(x + 1, y) != I(x, y) ||
                         I(x, y - 1) != I(x, y) || I(x, y + 1) != I(x, y))
                 {
-                    const int i = sub(x, y);
+                    const int i = SUB(x, y);
 
                     p[i].d1 = 0;
 
@@ -321,7 +340,7 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
     const float dxy = sqrtf(2.0);
 
 #define _check(X,Y,Delta)                             \
-    i1=sub((X),(Y));                              \
+    i1=SUB((X),(Y));                              \
     if (p[i1].d1 + (Delta) < p[i2].d1) {          \
         p[i2] = p[i1];                            \
         float  q1 = p[i1].d2;                     \
@@ -339,7 +358,7 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
         for (x = 1; x < w - 1; x++)
         {
             int i1;
-            const int i2 = sub(x, y);
+            const int i2 = SUB(x, y);
 
 
             _check(x - 1, y, DX);
@@ -363,7 +382,7 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
         for (x = w - 2; x >= 1; x--)
         {
             int i1;
-            const int i2 = sub(x, y);
+            const int i2 = SUB(x, y);
 
             _check(x + 1, y, DX);
             _check(x + 1, y + 1, dxy);
@@ -385,15 +404,18 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
     {
         for (int x = 0; x < w; x++)
         {
-            const int i = sub(x, y);
+            const int i = SUB(x, y);
             if (I(x, y) == 0)
             {
                 p[i].d1 = -p[i].d1;
             }
         }
     }
+#undef I
+#undef V
 }
 
+/*
 static void buildSDF_(const ImageData& src, float rad, float, bool outer, ImageData& dest)
 {
     char* field = new char[src.w * src.h];
@@ -444,11 +466,11 @@ static void buildSDF_(const ImageData& src, float rad, float, bool outer, ImageD
                 if (I(x - 1, y) != t || I(x + 1, y) != t ||
                         I(x, y - 1) != t || I(x, y + 1) != t)
                     d(x, y) = 0;
-            /*
-            if (I(x - 1, y-1) != t || I(x + 1, y+1) != t ||
-                I(x-1, y + 1) != t || I(x + 1, y - 1) != t)
-                d(x, y) = 0;
-                */
+            
+    //        if (I(x - 1, y-1) != t || I(x + 1, y+1) != t ||
+  //              I(x-1, y + 1) != t || I(x + 1, y - 1) != t)
+//                d(x, y) = 0;
+                
         }
     }
 
@@ -538,6 +560,7 @@ static void buildSDF_(const ImageData& src, float rad, float, bool outer, ImageD
 
     delete[] field;
 }
+*/
 
 
 
@@ -648,11 +671,11 @@ fe_im get_mixed_image(const fe_node* node, const fe_args* args)
     for (int i = 0; i < num ; ++i)
     {
         fe_im& c = res[i];
-        r = std::max(r, c.image.w + c.x);
-        bt = std::max(bt, c.image.h + c.y);
+        r  = MAX(r, c.image.w + c.x);
+        bt = MAX(bt, c.image.h + c.y);
 
-        l = std::min(l, c.x);
-        t = std::min(t, c.y);
+        l = MIN(l, c.x);
+        t = MIN(t, c.y);
     }
 
     fe_im dest;
@@ -887,11 +910,11 @@ fe_im fe_get_subtract(const fe_node* node, const fe_args* args)
     {
         fe_im& c = res[i];
 
-        int r = std::min(base.image.w + base.x, c.image.w + c.x);
-        int b = std::min(base.image.h + base.y, c.image.h + c.y);
+        int r = MIN(base.image.w + base.x, c.image.w + c.x);
+        int b = MIN(base.image.h + base.y, c.image.h + c.y);
 
-        int t = std::max(base.y, c.y);
-        int l = std::max(base.x, c.x);
+        int t = MAX(base.y, c.y);
+        int l = MAX(base.x, c.x);
 
         int tw = r - l;
         int th = b - t;
@@ -1189,17 +1212,38 @@ int fe_node_get_in_node_id(const fe_node* node, int i)
     return 0;
 }
 
-void fe_node_apply(int font_size, const fe_im* gl, const fe_node* node,  fe_im* res)
+bool fe_node_apply2(int font_size, const fe_im* gl, const fe_node* node,  fe_im* res)
 {
     fe_args args;
     args.size = font_size;
     args.base = *gl;
     args.base.image.free = 0;//can't delete not owner
-    args.scale = font_size / 100.0;
+    args.scale = font_size / 100.0f;
     *res = get_image(node, &args);
+
+    return true;
 }
 
 
+bool fe_node_apply(
+    int font_size,
+    int x, int y,
+    int w, int h, FE_IMAGE_FORMAT format, int pitch, const void *data,
+    const fe_node* node, fe_im* res)
+{
+    fe_im gl;
+    gl.x = x;
+    gl.y = y;
+    gl.image.data = (uint8_t*)data;
+    gl.image.bytespp = getBytesPerPixel(format);
+    gl.image.format = format;
+    gl.image.free = 0;
+    gl.image.w = w;
+    gl.image.h = h;
+    gl.image.pitch = pitch;
+
+    return fe_node_apply2(font_size, &gl, node, res);
+}
 
 void _fe_node_apply(float scale, const fe_im* gl, const fe_node* node, int size, fe_im* res)
 {
