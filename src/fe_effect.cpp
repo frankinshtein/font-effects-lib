@@ -2,6 +2,8 @@
 #include "fe/fe_node.h"
 #include <stdlib.h>
 
+void _fe_free(void *ptr);
+
 fe_node* fe_effect_find_node(const fe_effect* ef, int id)
 {
     for (int i = 0; i < ef->num; ++i)
@@ -53,8 +55,8 @@ void fe_effect_free(fe_effect* effect)
 {
     for (int i = 0; i < effect->num; ++i)
     {
-        free(effect->nodes[i]);
+        _fe_free(effect->nodes[i]);
     }
 
-    free(effect->nodes);
+    _fe_free(effect->nodes);
 }

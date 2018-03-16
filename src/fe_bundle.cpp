@@ -4,7 +4,6 @@
 #include "fe/fe_node.h"
 #include "fe/fe_effect.h"
 #include "fe_parser.h"
-#include <memory.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -19,6 +18,9 @@ FILE *f = fopen("d:/log.txt", "w");
 #define LOG(d) fputs(d,f); fflush(f)
 */
 
+
+void* _fe_alloc(size_t size);
+void _fe_free(void *ptr);
 
 template <size_t N>
 static void safe_strcpy(char(&dest)[N], const char* src)
@@ -423,7 +425,7 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
     }
 
     effect->num = num;
-    effect->nodes = (fe_node**)malloc(sizeof(fe_node*) * num);
+    effect->nodes = (fe_node**)_fe_alloc(sizeof(fe_node*) * num);
 
     for (int i = 0; i < num; ++i)
     {
@@ -493,7 +495,7 @@ fe_effect_bundle*  fe_bundle_load(const void* data_, int size)
         return 0;
 
 
-    char* copy = (char*)malloc(size + 2);
+    char* copy = (char*)_fe_alloc(size + 2);
     *(copy + size) = 0;
     memcpy(copy, data, size);
 
@@ -525,12 +527,12 @@ fe_effect_bundle*  fe_bundle_load(const void* data_, int size)
 
     //LOGF("num %d", num_effects);
 
-    fe_effect_bundle* bundle = (fe_effect_bundle*)malloc(sizeof(fe_effect_bundle));
+    fe_effect_bundle* bundle = (fe_effect_bundle*)_fe_alloc(sizeof(fe_effect_bundle));
 
     //read_token(s);
     //CHECK_ERR();
 
-    bundle->effect = (fe_effect*)malloc(sizeof(fe_effect) * num_effects);
+    bundle->effect = (fe_effect*)_fe_alloc(sizeof(fe_effect) * num_effects);
     bundle->num = num_effects;
 
     for (int n = 0; n < num_effects; ++n)
@@ -540,7 +542,7 @@ fe_effect_bundle*  fe_bundle_load(const void* data_, int size)
         CHECK_ERR();
     }
 
-    free(copy);
+    _fe_free(copy);
 
     return bundle;
 }
@@ -557,8 +559,8 @@ void fe_bundle_free(fe_effect_bundle* bundle)
         fe_effect_free(ef);
     }
 
-    free(bundle->effect);
-    free(bundle);
+    _fe_free(bundle->effect);
+    _fe_free(bundle);
 }
 
 struct sstate

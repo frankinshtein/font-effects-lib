@@ -5,11 +5,14 @@
 #include "ImageDataOperations.h"
 #include <stdio.h>
 #include <assert.h>
-#include <memory.h>
 #include <stdlib.h>
 #include <math.h>
 #include <float.h>
 #include <limits.h>
+
+
+void* _fe_alloc(size_t size);
+void _fe_free(void *ptr);
 
 
 using namespace fe;
@@ -265,7 +268,7 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
 
 #define V(X, Y) (src.data[X * src.bytespp + Y * src.pitch + off])
 
-    P* p = (P*)malloc(h * w * sizeof(P));
+    P* p = (P*)_fe_alloc(h * w * sizeof(P));
 
     if (dist)
     {
@@ -944,7 +947,7 @@ fe_im fe_get_stroke_simple(const fe_node* node, const fe_args* args)
     int nw = mixed.image.w + 2;
     int nh = mixed.image.h + 2;
 
-    int* data = (int*)malloc(nw * nh * sizeof(int));
+    int* data = (int*)_fe_alloc(nw * nh * sizeof(int));
     memset(data, 0, nw * nh * sizeof(int));
 
     int w = mixed.image.w;
@@ -1064,7 +1067,7 @@ fe_im fe_get_stroke_simple(const fe_node* node, const fe_args* args)
         }
     }
 
-    free(data);
+    _fe_free(data);
 
     fe_im im;
     im.image = res;
@@ -1076,14 +1079,14 @@ fe_im fe_get_stroke_simple(const fe_node* node, const fe_args* args)
 
 fe_node_image* fe_node_image_alloc()
 {
-    fe_node_image* node = (fe_node_image*)malloc(sizeof(fe_node_image));
+    fe_node_image* node = (fe_node_image*)_fe_alloc(sizeof(fe_node_image));
     fe_node_init(&node->base, fe_node_type_image, (get_node_image)fe_get_image);
     return node;
 }
 
 fe_node_image_fixed* fe_node_image_fixed_alloc()
 {
-    fe_node_image_fixed* node = (fe_node_image_fixed*)malloc(sizeof(fe_node_image_fixed));
+    fe_node_image_fixed* node = (fe_node_image_fixed*)_fe_alloc(sizeof(fe_node_image_fixed));
     fe_node_init(&node->base, fe_node_type_image_fixed, (get_node_image)fe_get_image_fixed);
     node->im.x = 0;
     node->im.y = 0;
@@ -1093,7 +1096,7 @@ fe_node_image_fixed* fe_node_image_fixed_alloc()
 
 fe_node_mix* fe_node_mix_alloc()
 {
-    fe_node_mix* node = (fe_node_mix*)malloc(sizeof(fe_node_mix));
+    fe_node_mix* node = (fe_node_mix*)_fe_alloc(sizeof(fe_node_mix));
     fe_node_init(&node->base, fe_node_type_mix, (get_node_image)fe_get_mix_image);
 
     return node;
@@ -1101,7 +1104,7 @@ fe_node_mix* fe_node_mix_alloc()
 
 fe_node_out*         fe_node_out_alloc()
 {
-    fe_node_out* node = (fe_node_out*)malloc(sizeof(fe_node_out));
+    fe_node_out* node = (fe_node_out*)_fe_alloc(sizeof(fe_node_out));
     fe_node_init(&node->base, fe_node_type_out, (get_node_image)fe_get_out_image);
 
     return node;
@@ -1109,7 +1112,7 @@ fe_node_out*         fe_node_out_alloc()
 
 fe_node_outline* fe_node_outline_alloc()
 {
-    fe_node_outline* node = (fe_node_outline*)malloc(sizeof(fe_node_outline));
+    fe_node_outline* node = (fe_node_outline*)_fe_alloc(sizeof(fe_node_outline));
     fe_node_init(&node->base, fe_node_type_outline, (get_node_image)fe_get_outline_image);
     node->rad = 1.0f;
     node->sharpness = 1.0f;
@@ -1118,7 +1121,7 @@ fe_node_outline* fe_node_outline_alloc()
 
 fe_node_distance_field*  fe_node_distance_field_alloc()
 {
-    fe_node_distance_field* node = (fe_node_distance_field*)malloc(sizeof(fe_node_distance_field));
+    fe_node_distance_field* node = (fe_node_distance_field*)_fe_alloc(sizeof(fe_node_distance_field));
     fe_node_init(&node->base, fe_node_type_distance_field, (get_node_image)fe_get_distance_field);
     node->base.properties_float[0] = 10.0f;
     return node;
@@ -1126,14 +1129,14 @@ fe_node_distance_field*  fe_node_distance_field_alloc()
 
 fe_node*  fe_node_stroke_simple_alloc()
 {
-    fe_node* node = (fe_node*)malloc(sizeof(fe_node));
+    fe_node* node = (fe_node*)_fe_alloc(sizeof(fe_node));
     fe_node_init(node, fe_node_type_stroke_simple, (get_node_image)fe_get_stroke_simple);
     return node;
 }
 
 fe_node*                 fe_node_subtract_alloc()
 {
-    fe_node* node = (fe_node*)malloc(sizeof(fe_node));
+    fe_node* node = (fe_node*)_fe_alloc(sizeof(fe_node));
     fe_node_init(node, fe_node_type_subtract, (get_node_image)fe_get_subtract);
     return node;
 }
@@ -1141,7 +1144,7 @@ fe_node*                 fe_node_subtract_alloc()
 
 fe_node_fill* fe_node_fill_alloc()
 {
-    fe_node_fill* node = (fe_node_fill*)malloc(sizeof(fe_node_fill));
+    fe_node_fill* node = (fe_node_fill*)_fe_alloc(sizeof(fe_node_fill));
     fe_node_init(&node->base, fe_node_type_fill, (get_node_image)fe_get_fill);
 
     node->grad.colors_num = 1;
@@ -1186,7 +1189,7 @@ fe_node* fe_node_alloc(int node_type)
             return fe_node_subtract_alloc();
         default:
         {
-            fe_node* node = (fe_node*)malloc(sizeof(fe_node));
+            fe_node* node = (fe_node*)_fe_alloc(sizeof(fe_node));
             fe_node_init(node, nt, (get_node_image)fe_get_custom_image);
             return node;
         }
@@ -1196,7 +1199,7 @@ fe_node* fe_node_alloc(int node_type)
 
 void _fe_node_free(fe_node* node)
 {
-    free(node);
+    _fe_free(node);
 }
 
 void _fe_node_connect(const fe_node* src, fe_node* dest, int pin)

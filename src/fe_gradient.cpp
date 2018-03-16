@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include "fe/fe_image.h"
 #include <assert.h>
-#include <memory.h>
-//#include <malloc.h>
 #include "ImageDataOperations.h"
 
 using namespace fe;

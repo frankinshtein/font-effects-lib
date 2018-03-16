@@ -3,7 +3,6 @@
 #include "fe/fe_image.h"
 #include "fe/fe_node.h"
 #include <assert.h>
-#include <memory.h>
 #include <stdlib.h>
 #include "ImageDataOperations.h"
 #include <math.h>
@@ -13,6 +12,9 @@
 
 #include "fe/fe_effect.h"
 using namespace fe;
+
+void* _fe_alloc(size_t size);
+void _fe_free(void *ptr);
 
 ImageData* asImage(fe_image* im);
 const ImageData* asImage(const fe_image* im);
@@ -31,7 +33,7 @@ fe_im fe_get_custom_image(const fe_node* node, const fe_args* args)
     int nw = mixed.image.w + 2;
     int nh = mixed.image.h + 2;
 
-    int* data = (int*)malloc(nw * nh * sizeof(int));
+    int* data = (int*)_fe_alloc(nw * nh * sizeof(int));
     memset(data, 0, nw * nh * sizeof(int));
 
     int w = mixed.image.w;
@@ -102,7 +104,7 @@ fe_im fe_get_custom_image(const fe_node* node, const fe_args* args)
         }
     }
 
-    free(data);
+    _fe_free(data);
 
     fe_im im;
     im.image = res;

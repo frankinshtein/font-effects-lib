@@ -8,6 +8,17 @@
 #include "fe/fe_effect.h"
 #include "tga.h"
 
+
+void* _fe_alloc(size_t size)
+{
+    return malloc(size);
+}
+
+void _fe_free(void *ptr)
+{
+    free(ptr);
+}
+
 void _debug_image_created(fe_image *)
 {}
 
