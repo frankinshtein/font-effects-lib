@@ -197,7 +197,7 @@ static void parse_alpha(const char* str, unsigned char* c)
 }
 
 
-void fe_node_init(fe_node* node, int tp, get_node_image f);
+void fe_node_init(fe_node* node, int tp, fe_get_node_image f);
 
 fe_node* fe_load_node(fe_state& s)
 {
@@ -349,7 +349,7 @@ static void next_line(fe_state &s)
     s.error = true;
 }
 
-void* fe_load_effect(fe_state& s, fe_effect* effect)
+void* fe_load_effect(fe_instance *inst, fe_state& s, fe_effect* effect)
 {
     effect->text[0] = 0;
     effect->path_back[0] = 0;
@@ -423,7 +423,7 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
     }
 
     effect->num = num;
-    effect->nodes = (fe_node**)malloc(sizeof(fe_node*) * num);
+    effect->nodes = (fe_node**)inst->alloc(sizeof(fe_node*) * num);
 
     for (int i = 0; i < num; ++i)
     {
@@ -484,7 +484,7 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
 }
 
 FONT_EFFECT_EXPORT
-fe_effect_bundle*  fe_bundle_load(const void* data_, int size)
+fe_effect_bundle*  fe_bundle_load(fe_instance *inst, const void* data_, int size)
 {
     const unsigned char *data = (const unsigned char *)data_;
     if (size < 4)
@@ -493,7 +493,7 @@ fe_effect_bundle*  fe_bundle_load(const void* data_, int size)
         return 0;
 
 
-    char* copy = (char*)malloc(size + 2);
+    char* copy = (char*)inst->alloc(size + 2);
     *(copy + size) = 0;
     memcpy(copy, data, size);
 
@@ -525,12 +525,12 @@ fe_effect_bundle*  fe_bundle_load(const void* data_, int size)
 
     //LOGF("num %d", num_effects);
 
-    fe_effect_bundle* bundle = (fe_effect_bundle*)malloc(sizeof(fe_effect_bundle));
+    fe_effect_bundle* bundle = (fe_effect_bundle*)inst->alloc(sizeof(fe_effect_bundle));
 
     //read_token(s);
     //CHECK_ERR();
 
-    bundle->effect = (fe_effect*)malloc(sizeof(fe_effect) * num_effects);
+    bundle->effect = (fe_effect*)inst->alloc(sizeof(fe_effect) * num_effects);
     bundle->num = num_effects;
 
     for (int n = 0; n < num_effects; ++n)

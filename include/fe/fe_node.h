@@ -7,6 +7,9 @@
 #include "fe_gradient.h"
 
 
+
+typedef fe_im(*fe_get_node_image)(const struct fe_node*, const struct fe_args*);
+
 typedef struct fe_apply_grad
 {
     fe_plane plane;
@@ -28,7 +31,7 @@ typedef struct fe_args
     float scale;
 } fe_args;
 
-typedef fe_im(*get_node_image)(const struct fe_node*, const struct fe_args*);
+typedef fe_im(*fe_get_node_image)(const struct fe_node*, const struct fe_args*);
 
 
 
@@ -48,7 +51,7 @@ typedef struct fe_node
     int x;
     int y;            
 
-    get_node_image get_image;
+    fe_get_node_image get_image;
     struct fe_pin in[FE_MAX_PINS];
     float properties_float[FE_MAX_PROPS];
     int   properties_int[FE_MAX_PROPS];

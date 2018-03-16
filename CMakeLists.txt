@@ -10,6 +10,7 @@ set(HEADERS
 	${ROOT}/include/fe/fe_gradient.h
 	${ROOT}/include/fe/fe_image.h
 	${ROOT}/include/fe/fe_node.h
+	${ROOT}/include/fe/fe_instance.h
 	)
 
 add_library(font-effect 	

@@ -3,7 +3,7 @@
 #include "fe/fe_image.h"
 #include <assert.h>
 #include <memory.h>
-//#include <malloc.h>
+//#include <inst->alloc.h>
 #include "ImageDataOperations.h"
 
 using namespace fe;

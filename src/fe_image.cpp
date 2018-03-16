@@ -22,7 +22,7 @@ const ImageData* asImage(const fe_image* im)
 }
 
 
-void image_free_malloc(fe_image* im)
+void image_free_malloc(fe_instance *inst, fe_image* im)
 {
     _debug_image_deleted(im);
 
@@ -30,7 +30,7 @@ void image_free_malloc(fe_image* im)
     im->data = 0;
 }
 
-void fe_image_create(fe_image* im, int w, int h, FE_IMAGE_FORMAT f)
+void fe_image_create(fe_instance *inst, fe_image* im, int w, int h, FE_IMAGE_FORMAT f)
 {
     int i = sizeof(*im);
     im->w = w;
@@ -38,17 +38,17 @@ void fe_image_create(fe_image* im, int w, int h, FE_IMAGE_FORMAT f)
     im->format = f;
     im->bytespp = getBytesPerPixel(im->format);
     im->pitch = im->bytespp * im->w;
-    im->data = (uint8_t*)malloc(im->pitch * im->h);
+    im->data = (uint8_t*)inst->alloc(im->pitch * im->h);
     im->free = image_free_malloc;
 
     _debug_image_created(im);    
 }
 
-void fe_image_free(fe_image* im)
+void fe_image_free(fe_instance *inst, fe_image* im)
 {
     if (im->free)
     {
-        im->free(im);
+        im->free(inst, im);
         im->free = 0;
     }
 }
@@ -79,11 +79,11 @@ void fe_image_fill(fe_image* dest, const fe_color* color_)
 }
 
 
-void fe_image_copy_alloc(const fe_image* src, fe_image* dest)
+void fe_image_copy_alloc(fe_instance *inst, const fe_image* src, fe_image* dest)
 {
     *dest = *src;
     dest->pitch = dest->w * dest->bytespp;
-    dest->data = (uint8_t*)malloc(dest->pitch * dest->h);
+    dest->data = (uint8_t*)inst->alloc(dest->pitch * dest->h);
     dest->free = image_free_malloc;
     fe_image_copy(src, dest);
 

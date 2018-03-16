@@ -2,11 +2,12 @@
 #define FONT_IMAGE_H
 #include <stdint.h>
 #include <stdbool.h>
+#include "fe_instance.h"
 #include "fe_export.h"
 #include "fe_gradient.h"
 
 
-typedef void(*free_image_fn)(struct fe_image*);
+typedef void(*free_image_fn)(fe_instance *inst, struct fe_image*);
 
 enum FE_IMAGE_FORMAT
 {

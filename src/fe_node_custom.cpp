@@ -31,7 +31,7 @@ fe_im fe_get_custom_image(const fe_node* node, const fe_args* args)
     int nw = mixed.image.w + 2;
     int nh = mixed.image.h + 2;
 
-    int* data = (int*)malloc(nw * nh * sizeof(int));
+    int* data = (int*)inst->alloc(nw * nh * sizeof(int));
     memset(data, 0, nw * nh * sizeof(int));
 
     int w = mixed.image.w;
