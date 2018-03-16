@@ -1074,6 +1074,8 @@ fe_im fe_get_stroke_simple(const fe_node* node, const fe_args* args)
     im.x = mixed.x - 1;
     im.y = mixed.y - 1;
 
+    fe_image_free(&mixed.image);
+
     return im;
 }
 
