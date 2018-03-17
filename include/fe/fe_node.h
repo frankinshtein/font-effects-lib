@@ -164,7 +164,4 @@ bool fe_node_apply(
 FONT_EFFECT_EXPORT
 bool fe_node_apply2(int font_size, const fe_im* gl, const fe_node* node, fe_im* res);
 
-FONT_EFFECT_EXPORT
-void _fe_node_apply(float scale, const fe_im* gl, const fe_node* node, int size, fe_im* res);
-
 #endif
