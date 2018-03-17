@@ -15,7 +15,7 @@ public:
         rgba.b = B;
         rgba.a = A;
     }
-    Color(const fe_color& c) { *static_cast<fe_color*>(this) = c; }
+    Color(const fe_color& c) { *(fe_color*)(this) = c; }
 };
 
 
