@@ -108,6 +108,12 @@ namespace fe
             blitPremultiply(dest, dest);
         }
 
+        void unpremultiply(const ImageData& dest)
+        {
+            op_unpremultipliedAlpha op;
+            applyOperation(op, dest, dest);
+        }
+
         void blitColored(const ImageData& src, const ImageData& dest, const Color& c)
         {
             Pixel p;

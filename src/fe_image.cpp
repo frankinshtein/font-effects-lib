@@ -98,6 +98,11 @@ void fe_image_blit(const fe_image* src, fe_image* dest)
     operations::blit(*asImage(src), *asImage(dest));
 }
 
+void fe_image_unpremultiply(fe_image* src)
+{
+    operations::unpremultiply(*asImage(src));
+}
+
 void fe_image_premultiply(fe_image* gl)
 {
     operations::premultiply(*asImage(gl));

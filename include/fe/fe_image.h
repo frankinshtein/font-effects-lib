@@ -71,6 +71,9 @@ FONT_EFFECT_EXPORT
 void  fe_image_blit(const fe_image* src,  fe_image* dest);
 
 FONT_EFFECT_EXPORT
+void  fe_image_unpremultiply(fe_image* src);
+
+FONT_EFFECT_EXPORT
 void  fe_image_to_bgra(fe_image* src);
 
 FONT_EFFECT_EXPORT

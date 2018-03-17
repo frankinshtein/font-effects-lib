@@ -18,6 +18,7 @@ namespace fe
         void blitColored(const ImageData& src, const ImageData& dest, const Color& c);
         void blitPremultiply(const ImageData& src, const ImageData& dest);
         void premultiply(const ImageData& dest);
+        void unpremultiply(const ImageData& dest);
         void flipY(const ImageData& src, const ImageData& dest);
         void blend(const ImageData& src, const ImageData& dest);
         void fill(ImageData& dest, const Color& color);
@@ -111,6 +112,30 @@ namespace fe
             }
         };
 
+        class op_unpremultipliedAlpha
+        {
+        public:
+            template<class Src, class Dest>
+            void operator()(const Src& srcPixelFormat, Dest& destPixelFormat, const unsigned char* srcData, unsigned char* destData, OPERATOR_ARGS) const
+            {
+                Pixel p;
+                srcPixelFormat.getPixel(srcData, p, OPERATOR_ARGS_PASS);
+
+                //we need correct "snapped" to pixel format alpha
+                unsigned char na = destPixelFormat.snap_a(p.a);
+
+                if (na != 0)
+                { 
+                    p.r = (p.r * 255) / na;
+                    p.g = (p.g * 255) / na;
+                    p.b = (p.b * 255) / na;
+                }
+                
+
+                destPixelFormat.setPixel(destData, p);
+            }
+        };
+
         class op_blit
         {
         public:
@@ -161,13 +186,12 @@ namespace fe
                 destPixelFormat.getPixel(destData, d, OPERATOR_ARGS_PASS);
 
 #define M(v) v < 255 ? v : 255;
-                unsigned char a = 255;
                 unsigned char ia = 255 - s.a;
                 Pixel r;
-                r.r = M((d.r * ia) / 255 + (s.r * a) / 255);
-                r.g = M((d.g * ia) / 255 + (s.g * a) / 255);
-                r.b = M((d.b * ia) / 255 + (s.b * a) / 255);
-                r.a = M((d.a * ia) / 255 + (s.a * a) / 255);
+                r.r = M((d.r * ia) / 255 + s.r);
+                r.g = M((d.g * ia) / 255 + s.g);
+                r.b = M((d.b * ia) / 255 + s.b);
+                r.a = M((d.a * ia) / 255 + s.a);
 #undef  M
 
                 destPixelFormat.setPixel(destData, r);
