@@ -1219,9 +1219,13 @@ bool fe_node_apply2(int font_size, const fe_im* gl, const fe_node* node,  fe_im*
     fe_args args;
     args.size = font_size;
     args.base = *gl;
+    args.base.y = font_size - args.base.y;
     args.base.image.free = 0;//can't delete not owner
     args.scale = font_size / 100.0f;
+
     *res = get_image(node, &args);
+
+    res->y = font_size - res->y;
 
     return true;
 }
@@ -1245,14 +1249,4 @@ bool fe_node_apply(
     gl.image.pitch = pitch;
 
     return fe_node_apply2(font_size, &gl, node, res);
-}
-
-void _fe_node_apply(float scale, const fe_im* gl, const fe_node* node, int size, fe_im* res)
-{
-    fe_args args;
-    args.size = size;
-    args.base = *gl;
-    args.base.image.free = 0;//can't delete not owner
-    args.scale = scale;
-    *res = get_image(node, &args);
 }
