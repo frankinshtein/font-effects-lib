@@ -114,7 +114,7 @@ int getBytesPerPixel(FE_IMAGE_FORMAT tf)
         case FE_IMG_R8G8B8A8:
             return 4;
         case FE_IMG_DISTANCE:
-            return 8;
+            return sizeof(PixDist);
     }
     return 0;
 }

@@ -8,6 +8,16 @@
 
 typedef void(*free_image_fn)(struct fe_image*);
 
+
+class PixDist//todo, move
+{
+public:
+    float d1;
+    float d2;
+    short x;
+    short y;
+};
+
 enum FE_IMAGE_FORMAT
 {
     TF_UNDEFINED = 0,

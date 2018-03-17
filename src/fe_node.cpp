@@ -40,16 +40,6 @@ bool  fe_image_save_tga(const fe_image* src, const char* fname);
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 
-class P
-{
-public:
-    float d1;
-    float d2;
-    short x;
-    short y;
-};
-
-
 template <class T>
 class PixelR8G8B8A8_GradApply : public T
 {
@@ -128,7 +118,7 @@ public:
         if (x == 4 && y == 4)
             int qwewq = 0;
 
-        const P* pp = (P*)data;
+        const PixDist* pp = (PixDist*)data;
 
         float d1 = pp->d1;
         float d2 = pp->d2;
@@ -268,6 +258,9 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
 
 #define V(X, Y) (src.data[X * src.bytespp + Y * src.pitch + off])
 
+    PixDist* p = (PixDist*)(dest.data);
+    
+    /*
     P* p = (P*)_fe_alloc(h * w * sizeof(P));
 
     if (dist)
@@ -276,12 +269,13 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
         dest.bytespp = sizeof(P);
         dest.pitch = src.w * dest.bytespp;
     }
+    */
 
     //auto sub = [ = ](int x, int y) {return x + y * w; };
 
 #define SUB(X, Y) (X + Y * w)
 
-    P zero;
+    PixDist zero;
     zero.d1 = 1000.0f;
     zero.d2 = 0.0f;
     zero.x = -1;
@@ -887,6 +881,9 @@ fe_im fe_get_distance_field(const fe_node_distance_field* node, const fe_args* a
     ImageData imDist;
     fe_image_create(&imDist, imSrc.w, imSrc.h, FE_IMG_DISTANCE);
     buildSDF(imSrc, rad, 0, outer, imDist, true);
+
+    fe_image_free(&src.image);
+    fe_image_free(&imSrc);
 
     fe_im res;
     res.image = imDist;
