@@ -50,10 +50,12 @@ int main()
     im.y = 0;
 
     fe_im res;
-
     fe_node_apply2(100, &im, out_node, &res);
-    
+
     //res.image is PREMULTIPLIED ALPHA
+    //unpremultiply it
+    fe_image_unpremultiply(&res.image);
+
     save_tga(&res.image, "dest.tga");
 
     fe_image_free(&res.image);
