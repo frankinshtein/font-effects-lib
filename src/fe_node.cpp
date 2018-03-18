@@ -244,7 +244,7 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
         return v != 0;
     };
     */
-#define I(X, Y) (src.data[X * src.bytespp + Y * src.pitch + off] != 0)
+#define I(X, Y) (src.data[(X) * src.bytespp + (Y) * src.pitch + off] != 0)
 
     /*
     auto V = [ = ](int x, int y)
@@ -256,7 +256,7 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
     };
     */
 
-#define V(X, Y) (src.data[X * src.bytespp + Y * src.pitch + off])
+#define V(X, Y) (src.data[(X) * src.bytespp + (Y) * src.pitch + off])
 
     PixDist* p = (PixDist*)(dest.data);
     
@@ -273,7 +273,7 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
 
     //auto sub = [ = ](int x, int y) {return x + y * w; };
 
-#define SUB(X, Y) (X + Y * w)
+#define SUB(X, Y) ((X) + (Y) * w)
 
     PixDist zero;
     zero.d1 = 1000.0f;
