@@ -1079,7 +1079,7 @@ fe_im fe_get_stroke_simple(const fe_node* node, const fe_args* args)
 fe_node_image* fe_node_image_alloc()
 {
     fe_node_image* node = (fe_node_image*)_fe_alloc(sizeof(fe_node_image));
-    fe_node_init(&node->base, fe_node_type_image, (get_node_image)fe_get_image);
+    fe_node_init(&node->base, fe_node_type_source_image, (get_node_image)fe_get_image);
     return node;
 }
 
@@ -1168,8 +1168,14 @@ fe_node* fe_node_alloc(int node_type)
     fe_node_type nt = (fe_node_type)node_type;
     switch (nt)
     {
-        case fe_node_type_image:
+        case fe_node_type_source_image:
             return (fe_node*)fe_node_image_alloc();
+        case fe_node_type_source_text:
+        {
+            fe_node* node = (fe_node*)_fe_alloc(sizeof(fe_node));
+            fe_node_init(node, nt, (get_node_image)fe_get_image);
+            return node;
+        }
         case fe_node_type_image_fixed:
             return (fe_node*)fe_node_image_fixed_alloc();
         case fe_node_type_fill:
@@ -1189,7 +1195,7 @@ fe_node* fe_node_alloc(int node_type)
         default:
         {
             fe_node* node = (fe_node*)_fe_alloc(sizeof(fe_node));
-            fe_node_init(node, nt, (get_node_image)fe_get_custom_image);
+            fe_node_init(node, nt, (get_node_image)fe_get_mix_image);
             return node;
         }
     }

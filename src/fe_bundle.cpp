@@ -237,7 +237,7 @@ fe_node* fe_load_node(fe_state& s)
     fe_node* node = 0;
     switch (nd.type)
     {
-        case fe_node_type_image:
+        case fe_node_type_source_image:
             node = &fe_node_image_alloc()->base;
             break;
 
