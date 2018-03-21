@@ -63,18 +63,18 @@ typedef struct fe_node
 
 enum fe_node_type
 {
-    fe_node_type_source_image    = 1,
-    fe_node_type_image_fixed     = 2,
-    fe_node_type_fill            = 3,
-    fe_node_type_outline         = 4,
-    fe_node_type_mix             = 5,
-    fe_node_type_distance_field  = 6,
-    fe_node_type_subtract        = 7,
-    fe_node_type_stroke_simple   = 10,
-    fe_node_type_out             = 50,
-    fe_node_type_source_text     = 60,
-    fe_node_type_out_group       = 61,
-    fe_node_type_custom          = 100,    
+    fe_node_type_source_image = 1,
+    fe_node_type_image_fixed = 2,
+    fe_node_type_fill = 3,
+    fe_node_type_outline = 4,
+    fe_node_type_mix = 5,
+    fe_node_type_distance_field = 6,
+    fe_node_type_subtract = 7,
+    fe_node_type_stroke_simple = 10,
+    fe_node_type_out = 50,
+    fe_node_type_source_text = 60,
+    fe_node_type_out_group = 61,
+    fe_node_type_custom = 100,
 };
 
 typedef struct  fe_node_image

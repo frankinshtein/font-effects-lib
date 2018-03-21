@@ -5,9 +5,6 @@
 #include "ImageDataOperations.h"
 using namespace fe;
 
-void _debug_image_created(fe_image *);
-void _debug_image_deleted(fe_image *);
-
 void* _fe_alloc(size_t size);
 void _fe_free(void *ptr);
 
@@ -27,8 +24,6 @@ const ImageData* asImage(const fe_image* im)
 
 void image_free_malloc(fe_image* im)
 {
-    _debug_image_deleted(im);
-
     _fe_free(im->data);
     im->data = 0;
 }
@@ -43,8 +38,6 @@ void fe_image_create(fe_image* im, int w, int h, FE_IMAGE_FORMAT f)
     im->pitch = im->bytespp * im->w;
     im->data = (uint8_t*)_fe_alloc(im->pitch * im->h);
     im->free = image_free_malloc;
-
-    _debug_image_created(im);    
 }
 
 void fe_image_free(fe_image* im)
@@ -89,8 +82,6 @@ void fe_image_copy_alloc(const fe_image* src, fe_image* dest)
     dest->data = (uint8_t*)_fe_alloc(dest->pitch * dest->h);
     dest->free = image_free_malloc;
     fe_image_copy(src, dest);
-
-    _debug_image_created(dest);
 }
 
 void fe_image_blit(const fe_image* src, fe_image* dest)
