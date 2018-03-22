@@ -1,30 +1,56 @@
 cmake_minimum_required (VERSION 2.6)
-project (font-effects-lib)
 
-set(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+project(fe)
+
+OPTION(FE_EXTERNAL_BUILD "FE_EXTERNAL_BUILD" OFF)
+option(FE_TEST_BUILD "FE_TEST_BUILD" ON)
+
+IF( NOT FE_EXTERNAL_BUILD )
+    SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/${CMAKE_GENERATOR} )    
+ENDIF()
+
+SET( INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include )
+SET( SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
 
 set(HEADERS 
-	${ROOT}/include/fe/fe_bundle.h
-	${ROOT}/include/fe/fe_effect.h
-	${ROOT}/include/fe/fe_export.h
-	${ROOT}/include/fe/fe_gradient.h
-	${ROOT}/include/fe/fe_image.h
-	${ROOT}/include/fe/fe_node.h
+	${INCLUDE_DIR}/fe/fe_bundle.h
+	${INCLUDE_DIR}/fe/fe_effect.h
+	${INCLUDE_DIR}/fe/fe_export.h
+	${INCLUDE_DIR}/fe/fe_gradient.h
+	${INCLUDE_DIR}/fe/fe_image.h
+	${INCLUDE_DIR}/fe/fe_node.h
 	)
+    
+set(SOURCES
+	${SOURCE_DIR}/fe_image.cpp
+	${SOURCE_DIR}/fe_effect.cpp
+	${SOURCE_DIR}/fe_node.cpp
+	${SOURCE_DIR}/fe_node_custom.cpp
+	${SOURCE_DIR}/fe_bundle.cpp
+	${SOURCE_DIR}/fe_gradient.cpp
+	${SOURCE_DIR}/ImageData.cpp
+	${SOURCE_DIR}/ImageDataOperations.cpp
+    )
 
-add_library(font-effect 	
-	${ROOT}/src/fe_image.cpp
-	${ROOT}/src/fe_effect.cpp
-	${ROOT}/src/fe_node.cpp
-	${ROOT}/src/fe_node_custom.cpp
-	${ROOT}/src/fe_bundle.cpp
-	${ROOT}/src/fe_gradient.cpp
-	${ROOT}/src/ImageData.cpp
-	${ROOT}/src/ImageDataOperations.cpp
-	${HEADERS})
+include_directories(${INCLUDE_DIR})
+    
+add_library(${PROJECT_NAME}
+    ${HEADERS}
+	${SOURCES}	
+    )
+    
+if( FE_TEST_BUILD )
+    SET( TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test )
+    
+    set(TEST_SOURCES
+        ${TEST_DIR}/main.cpp
+        ${TEST_DIR}/tga.h
+        ${TEST_DIR}/tga.cpp
+        )
+        
+    include_directories(${INCLUDE_DIR})
+    include_directories(${SOURCE_DIR})
 
-include_directories(${ROOT}/src)
-include_directories(${ROOT}/include)
-
-add_executable(font-effect-test test/main.cpp test/tga.h test/tga.cpp)
-target_link_libraries(font-effect-test font-effect)
+    add_executable(test ${TEST_SOURCES})
+    target_link_libraries(test fe)
+endif()
