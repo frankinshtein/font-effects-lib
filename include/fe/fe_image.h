@@ -74,9 +74,6 @@ FONT_EFFECT_EXPORT
 void  fe_image_unpremultiply(fe_image* src);
 
 FONT_EFFECT_EXPORT
-void  fe_image_to_bgra(fe_image* src);
-
-FONT_EFFECT_EXPORT
 int getBytesPerPixel(FE_IMAGE_FORMAT);
 
 #endif //FONT_IMAGE_H

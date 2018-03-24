@@ -45,7 +45,7 @@ const char* fe_effect_get_path_font(const fe_effect* ef)
 {
     return ef->path_font;
 }
-
+    
 const char* fe_effect_get_path_back(const fe_effect* ef)
 {
     return ef->path_back;
