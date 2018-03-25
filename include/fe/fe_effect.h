@@ -1,6 +1,7 @@
 #ifndef FE_EFFECT_H
 #define FE_EFFECT_H
 #include "fe_export.h"
+#include "fe_node.h"
 
 typedef struct fe_effect
 {
@@ -21,7 +22,7 @@ FONT_EFFECT_EXPORT
 struct fe_node* fe_effect_find_node(const fe_effect* ef, int id);
 
 FONT_EFFECT_EXPORT
-struct fe_node* fe_effect_find_node_by_type(const fe_effect* ef, int tp);
+struct fe_node* fe_effect_find_node_by_type(const fe_effect* ef, int FE_NODE_TYPE);
 
 FONT_EFFECT_EXPORT
 struct fe_node* fe_effect_get_node(const fe_effect* ef, int i);

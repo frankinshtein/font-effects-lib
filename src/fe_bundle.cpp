@@ -486,7 +486,7 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
 }
 
 FONT_EFFECT_EXPORT
-fe_effect_bundle*  fe_bundle_load(const void* data_, int size)
+fe_bundle*  fe_bundle_load(const void* data_, int size)
 {
     const unsigned char *data = (const unsigned char *)data_;
     if (size < 4)
@@ -527,7 +527,7 @@ fe_effect_bundle*  fe_bundle_load(const void* data_, int size)
 
     //LOGF("num %d", num_effects);
 
-    fe_effect_bundle* bundle = (fe_effect_bundle*)_fe_alloc(sizeof(fe_effect_bundle));
+    fe_bundle* bundle = (fe_bundle*)_fe_alloc(sizeof(fe_bundle));
 
     //read_token(s);
     //CHECK_ERR();
@@ -551,7 +551,7 @@ fe_effect_bundle*  fe_bundle_load(const void* data_, int size)
 
 void fe_effect_free(fe_effect*);
 
-void fe_bundle_free(fe_effect_bundle* bundle)
+void fe_bundle_free(fe_bundle* bundle)
 {
     for (int i = 0; i < bundle->num; ++i)
     {
@@ -574,12 +574,12 @@ struct sstate
     char tmp[16];
 };
 
-fe_effect* fe_bundle_get_effect(fe_effect_bundle* bundle, int i)
+fe_effect* fe_bundle_get_effect(fe_bundle* bundle, int i)
 {
     return &bundle->effect[i];
 }
 
-fe_effect* fe_bundle_get_effect_by_name(fe_effect_bundle* bundle, const char* name)
+fe_effect* fe_bundle_get_effect_by_name(fe_bundle* bundle, const char* name)
 {
     int num = bundle->num;
     for (int i = 0; i < num; ++i)

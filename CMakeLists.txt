@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 
-project(fe)
+project(font-effects)
 
 OPTION(FE_EXTERNAL_BUILD "FE_EXTERNAL_BUILD" OFF)
 option(FE_TEST_BUILD "FE_TEST_BUILD" ON)
@@ -52,5 +52,5 @@ if( FE_TEST_BUILD )
     include_directories(${SOURCE_DIR})
 
     add_executable(test ${TEST_SOURCES})
-    target_link_libraries(test fe)
+    target_link_libraries(test font-effects)
 endif()

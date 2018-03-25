@@ -4,22 +4,22 @@
 #include "fe_export.h"
 
 
-typedef struct fe_effect_bundle
+typedef struct fe_bundle
 {
     struct fe_effect* effect;
     int num;
-} fe_effect_bundle;
+} fe_bundle;
 
 FONT_EFFECT_EXPORT
-fe_effect_bundle* fe_bundle_load(const void* data, int size);
+fe_bundle* fe_bundle_load(const void* data, int size);
 
 FONT_EFFECT_EXPORT
-void fe_bundle_free(fe_effect_bundle*);
+void fe_bundle_free(fe_bundle*);
 
 FONT_EFFECT_EXPORT
-struct fe_effect* fe_bundle_get_effect(fe_effect_bundle*, int i);
+struct fe_effect* fe_bundle_get_effect(fe_bundle*, int i);
 
 FONT_EFFECT_EXPORT
-struct fe_effect* fe_bundle_get_effect_by_name(fe_effect_bundle*, const char* name);
+struct fe_effect* fe_bundle_get_effect_by_name(fe_bundle*, const char* name);
 
 #endif

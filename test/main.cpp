@@ -34,7 +34,7 @@ int main()
     fclose(fh);
 
     //parse loaded file
-    fe_effect_bundle* bundle = fe_bundle_load(buff, size);
+    fe_bundle* bundle = fe_bundle_load(buff, size);
     printf("NUM effects: %d\n", bundle->num);
 
     //find effect in bundle by name
