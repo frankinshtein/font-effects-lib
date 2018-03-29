@@ -43,8 +43,6 @@ text:Abcdefg
 #pi
 size:100
 distance:.75
-font:../test..
-back:../test..
 text:Effect!
 @nodes
 *1,1,0,0,0,12,90,0,0,0,0,0,0,0,0,
@@ -69,7 +67,6 @@ text:Effect!
 #kappa
 size:150
 distance:1.2
-font:../Fonts/BigshotOne.ttf
 text:SHOP
 @nodes
 *1,1,0,0,0,10,10,0,0,0,0,0,0,0,0,
@@ -136,7 +133,6 @@ text:SHOP
 #beta
 size:100
 distance:1.1
-font:../Fonts/Merienda-Bold.ttf
 text:Exclusive Deal!
 @nodes
 *1,1,0,0,0,10,10,0,0,0,0,0,0,0,0,
