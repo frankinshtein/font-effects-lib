@@ -9,6 +9,7 @@
 #include <math.h>
 #include <float.h>
 #include <limits.h>
+#include <string.h>
 
 
 void* _fe_alloc(size_t size);

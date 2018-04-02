@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <float.h>
 #include <limits.h>
+#include <string.h>
 
 #include "fe/fe_effect.h"
 using namespace fe;
