@@ -357,6 +357,8 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
     effect->path_back[0] = 0;
     effect->path_font[0] = 0;
     effect->distance = 1.0f;
+	effect->px = -999;
+	effect->py = -999;
 
     read_fixed(s, "#");
     CHECK_ERR();
@@ -381,6 +383,14 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
             effect->distance = READ_FLOAT(s);
             continue;
         }
+
+
+		if (!strcmp(s.token, "pos"))
+		{
+			effect->px = READ_INT(s);
+			effect->py = READ_INT(s);
+			continue;
+		}
 
         char *param = 0;
         int len = 0;
