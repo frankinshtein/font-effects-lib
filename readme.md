@@ -17,6 +17,7 @@ It doesn't use generic filters like Photoshop (Stroke/Glow/Fill),
 but instead takes advantage of a fully-featured graph editor that can create fonts of any complexity.
 
 Video Example:
+
 [![example](https://img.youtube.com/vi/srbNzlthj5k/0.jpg)](https://www.youtube.com/watch?v=srbNzlthj5k)
 
 Here is an example of a saved project in the editor (and the file that you load in the game):
@@ -89,5 +90,5 @@ https://github.com/frankinshtein/font-effects-lib/blob/master/test/main.cpp
 ```
 
 ## Download Editor
-- [url=https://www.dropbox.com/s/4j3zfraj2p6xjqb/FontEffects_win.zip?dl=0]Editor for Windows[/url]
-- [url=https://www.dropbox.com/s/kd1rn0w063kzrjc/FontEffects_osx.zip?dl=0]Editor for MacOSX[/url]
+- [Editor for Windows](https://www.dropbox.com/s/4j3zfraj2p6xjqb/FontEffects_win.zip?dl=0)
+- [Editor for MacOSX](https://www.dropbox.com/s/4j3zfraj2p6xjqb/FontEffects_osx.zip?dl=0)
