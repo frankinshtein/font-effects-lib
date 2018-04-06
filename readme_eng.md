@@ -1,7 +1,7 @@
 Usually, if you wanted to create a beautiful but complex font for your game, you would have to make a font atlas in 
 photoshop (or similar).
 
-## The Issues
+## So what's the Problem?
 Atlasses take up a ton of space on the disk and memory in RAM. It's also difficult to tell which you will need and
 what size your atlas should be (HD or low-res). Dealing with distance field fonts is a pain, so what can you use instead?
 
@@ -11,10 +11,10 @@ Feed the library a picture of a letter in any size from FreeType and you'll get 
 All of this is done with only a couple of lines of code.
 The library is written in C++, is lightweight, available on the MIT license, doesn't depend on other libraries and has a simple C interface.
 
-## How do I make a beautiful font?
+## How do I make a complex font?
 That's where the visual editor comes in. 
-It doesn't use standard filters like Photoshop (Stroke/Glow/Fill), 
-but instead uses a fully-featured graph editor that can create fonts of any complexity.
+It doesn't use generic filters like Photoshop (Stroke/Glow/Fill), 
+but instead takes advantage of a fully-featured graph editor that can create fonts of any complexity.
 
 Video Example:
 [![example](https://img.youtube.com/vi/srbNzlthj5k/0.jpg)](https://www.youtube.com/watch?v=srbNzlthj5k)
