@@ -1,5 +1,6 @@
 #include "fe/fe_gradient.h"
 #include <stdio.h>
+#include <memory.h>
 #include "fe/fe_image.h"
 #include <assert.h>
 #include "ImageDataOperations.h"
