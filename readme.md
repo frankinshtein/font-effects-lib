@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/frankinshtein/font-effects-lib.svg?branch=master)](https://travis-ci.org/frankinshtein/font-effects-lib)
+
 Usually, if you wanted to create a beautiful but complex font for your game, you would have to make a font atlas in 
 photoshop (or similar).
 
