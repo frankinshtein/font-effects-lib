@@ -1,11 +1,10 @@
 [![Build Status](https://travis-ci.org/frankinshtein/font-effects-lib.svg?branch=master)](https://travis-ci.org/frankinshtein/font-effects-lib)
 
 Usually, if you wanted to create a beautiful but complex font for your game, you would have to make a font atlas in 
-photoshop (or similar).
+photoshop (or similar), add whatever effects you want, save it and then use it in your game.
 
 ## So what's the Problem?
-Atlasses take up a ton of space on the disk and memory in RAM. It's also difficult to tell which you will need and
-what size your atlas should be (HD or low-res). Dealing with distance field fonts is a pain, so what can you use instead?
+Atlasses take up a ton of space on the disk and memory in RAM. It's also difficult to tell which ones you will need (for example, for numbers you may only need to create digits, so do you leave out all letters and symbols &%!$# ? What about diacritical marks?). Also, you need to decide what size your atlas should be (HD or low-res). Dealing with distance field fonts is a pain, so what can you use instead?
 
 ## Why FontEffects?
 FontEffects allows you to [b]generate fonts on the fly in-game[/b]. 
