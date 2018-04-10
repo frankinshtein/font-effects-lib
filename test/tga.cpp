@@ -1,6 +1,7 @@
 #include "tga.h"
 #include "fe/fe.h"
 #include "ImageDataOperations.h"
+#include <stdio.h>
 
 void to_bgra(fe::ImageData* src)
 {
