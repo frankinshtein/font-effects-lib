@@ -7,8 +7,8 @@ photoshop (or similar), add whatever effects you want, save it and then use it i
 Atlasses take up a ton of space on the disk and memory in RAM. It's also difficult to tell which ones you will need (for example, for numbers you may only need to create digits, so do you leave out all letters and symbols &%!$# ? What about diacritical marks?). Also, you need to decide what size your atlas should be (HD or low-res). Dealing with distance field fonts is a pain, so what can you use instead?
 
 ## Why FontEffects?
-FontEffects allows you to [b]generate fonts on the fly in-game[/b]. 
-Feed the library a picture of a letter in any size from FreeType and you'll get a beautiful symbol on return.
+FontEffects helps you to **generate nice fonts on the fly in-game**. 
+Feed the library a picture of a letter in any size from FreeType (or any other image) and you'll get a beautiful symbol on return.
 All of this is done with only a couple of lines of code.
 The library is written in C++, is lightweight, available on the MIT license, doesn't depend on other libraries and has a simple C interface.
 
