@@ -15,7 +15,7 @@ The library is written in C++, is lightweight, available on the MIT license, doe
 ## How do I make a complex font?
 That's where the visual editor comes in. 
 It doesn't use generic filters like Photoshop (Stroke/Glow/Fill), 
-but instead takes advantage of a fully-featured graph editor that can create fonts of any complexity.
+but instead takes advantage of a fully-featured graph editor that can produce image of any complexity.
 
 Video Example:
 
