@@ -90,6 +90,9 @@ https://github.com/frankinshtein/font-effects-lib/blob/master/test/main.cpp
   // upon return, result is a buffer with the image - you can now use it for whatever you need!
 ```
 
+Emscripten Web Demo:
+http://oxygine.org/font_effects/HelloFreeType.html
+
 ## Download Editor
 - [Editor for Windows](https://www.dropbox.com/s/4j3zfraj2p6xjqb/FontEffects_win.zip?dl=0)
 - [Editor for MacOSX](https://www.dropbox.com/s/4j3zfraj2p6xjqb/FontEffects_osx.zip?dl=0)
