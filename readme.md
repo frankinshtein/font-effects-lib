@@ -60,7 +60,7 @@ https://github.com/frankinshtein/font-effects-lib/blob/master/test/main.cpp
     ...........    
 
     // load effects from buffer into memory
-    fe_effect_bundle* bundle = fe_bundle_load(buff, size);
+    fe_bundle* bundle = fe_bundle_load(buff, size);
 
     // get the effect by name (the file may contain different ones)
     fe_effect *effect = fe_bundle_get_effect_by_name(bundle, "sigma");    
