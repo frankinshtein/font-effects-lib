@@ -10,10 +10,28 @@ using namespace fe;
 ImageData* asImage(fe_image* im);
 const ImageData* asImage(const fe_image* im);
 
-template<class T>
-inline T lerp(T a, T b, float v)
+
+float interp(float v)
 {
-    return T(a + (b - a) * v);
+	if (v < 0)
+		return 0;
+	if (v > 1)
+		return 1;
+
+	
+	if (v < 0.5)
+		v = v * v * 2;
+	else
+		v = -1 + (4 - 2 * v)*v;
+		
+	/*
+	if (v < 0)
+		v = 0;
+	else if (v > 1)
+		v = 1;
+		*/
+
+	return v;
 }
 
 void  fe_gradient_create(struct fe_image* im, int width, int height,
@@ -87,11 +105,7 @@ void  fe_gradient_create(struct fe_image* im, int width, int height,
         }
 
         float d = x - colorsPosA;
-        float colorT = d / colorDist;
-        if (colorT < 0)
-            colorT = 0;
-        else if (colorT > 1)
-            colorT = 1;
+        float colorT = interp(d / colorDist);
 
 
         while (x > alphasPosB && alphaPositions != alphasPosEnd)
@@ -112,15 +126,7 @@ void  fe_gradient_create(struct fe_image* im, int width, int height,
 
 
         d = x - alphasPosA;
-        float alphaT = d / alphaDist;
-        if (alphaT < 0)
-            alphaT = 0;
-        else if (alphaT > 1)
-            alphaT = 1;
-
-
-
-
+        float alphaT = interp(d / alphaDist);
 
         data[0] = (unsigned char)(colorA.rgba.r + dr * colorT);
         data[1] = (unsigned char)(colorA.rgba.g + dg * colorT);
