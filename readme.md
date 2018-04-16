@@ -95,4 +95,4 @@ http://oxygine.org/font_effects/HelloFreeType.html
 
 ## Download Editor
 - [Editor for Windows](https://www.dropbox.com/s/4j3zfraj2p6xjqb/FontEffects_win.zip?dl=0)
-- [Editor for MacOSX](https://www.dropbox.com/s/4j3zfraj2p6xjqb/FontEffects_osx.zip?dl=0)
+- [Editor for MacOSX](https://www.dropbox.com/s/9tuz8aenclcn4sl/FontEffects_osx.zip?dl=0)
