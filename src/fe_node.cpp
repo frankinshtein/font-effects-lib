@@ -132,7 +132,7 @@ public:
 
         //d2 = 0;
 
-        float dist = d1 - d2;
+		float dist = d1;// -d2;
         //if (d1 > 0 && dist < 0)
         //  dist = d1;
         //if (dist < 0)
