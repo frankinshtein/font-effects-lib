@@ -59,12 +59,12 @@ namespace fe
             //p.a = data[0];
         }
 
-        void setPixel(unsigned char* data, const Pixel& p)
+        void setPixel(unsigned char* data, const Pixel& p) const
         {
             *data = p.a;
         }
 
-        void copy(const unsigned char* src, unsigned char* dst)
+        void copy(const unsigned char* src, unsigned char* dst) const
         {
             *((unsigned char*)dst) = *((unsigned char*)src);
         }
@@ -117,12 +117,12 @@ namespace fe
             p.a = 255;
         }
 
-        void setPixel(unsigned char* data, const Pixel& p)
+        void setPixel(unsigned char* data, const Pixel& p) const
         {
             *data = p.a;
         }
 
-        void copy(const unsigned char* src, unsigned char* dst)
+        void copy(const unsigned char* src, unsigned char* dst) const
         {
             *((unsigned char*)dst) = *((unsigned char*)src);
         }
@@ -145,12 +145,12 @@ namespace fe
             p.a = 255;
         }
 
-        void setPixel(unsigned char* data, const Pixel& p)
+        void setPixel(unsigned char* data, const Pixel& p) const
         {
             *data = (p.r + p.g + p.b) / 3;
         }
 
-        void copy(const unsigned char* src, unsigned char* dst)
+        void copy(const unsigned char* src, unsigned char* dst) const
         {
             *dst = *src;
         }
@@ -178,12 +178,13 @@ namespace fe
             p.a = 255;
         }
 
-        void setPixel(unsigned char* data, const Pixel& p)
+        void setPixel(unsigned char* data, const Pixel& p) const
         {
             unsigned short* pshort = (unsigned short*)data;
             *pshort = ((p.r >> 3) << 11) | ((p.g >> 2) << 5) | (p.b >> 3);
         }
-        void copy(const unsigned char* src, unsigned char* dst)
+
+        void copy(const unsigned char* src, unsigned char* dst) const
         {
             *((unsigned short*)dst) = *((unsigned short*)src);
         }
@@ -210,7 +211,7 @@ namespace fe
             p.a = data[3];
         }
 
-        void setPixel(unsigned char* data, const Pixel& p)
+        void setPixel(unsigned char* data, const Pixel& p) const
         {
             data[0] = p.r;
             data[1] = p.g;
@@ -218,7 +219,7 @@ namespace fe
             data[3] = p.a;
         }
 
-        void copy(const unsigned char* src, unsigned char* dst)
+        void copy(const unsigned char* src, unsigned char* dst) const
         {
             *((unsigned int*)dst) = *((unsigned int*)src);
         }
@@ -245,7 +246,7 @@ namespace fe
             p.a = data[3];
         }
 
-        void setPixel(unsigned char* data, const Pixel& p)
+        void setPixel(unsigned char* data, const Pixel& p) const
         {
             data[2] = p.r;
             data[1] = p.g;
@@ -253,7 +254,7 @@ namespace fe
             data[3] = p.a;
         }
 
-        void copy(const unsigned char* src, unsigned char* dst)
+        void copy(const unsigned char* src, unsigned char* dst) const
         {
             *((unsigned int*)dst) = *((unsigned int*)src);
         }

@@ -1237,7 +1237,6 @@ bool fe_node_apply2(int font_size, const fe_im* gl, const fe_node* node,  fe_im*
     return true;
 }
 
-
 bool fe_node_apply(
     int font_size,
     int x, int y,
@@ -1256,4 +1255,193 @@ bool fe_node_apply(
     gl.image.pitch = pitch;
 
     return fe_node_apply2(font_size, &gl, node, res);
+}
+
+
+
+
+template<class T>
+Pixel getPixel4x(const T& pf, const ImageData *src, int X, int Y)
+{
+    Pixel p0;
+    Pixel p1;
+    Pixel p2;
+    Pixel p3;
+
+    pf.getPixel(src->getPixelPtr(X, Y), p0, X, Y);
+    pf.getPixel(src->getPixelPtr(X + 1, Y), p1, X + 1, Y);
+    pf.getPixel(src->getPixelPtr(X, Y + 1), p2, X, Y + 1);
+    pf.getPixel(src->getPixelPtr(X + 1, Y + 1), p3, X + 1, Y + 1);
+
+    Pixel r;
+    r.r = (p0.r + p1.r + p2.r + p3.r) / 4;
+    r.g = (p0.g + p1.g + p2.g + p3.g) / 4;
+    r.b = (p0.b + p1.b + p2.b + p3.b) / 4;
+    r.a = (p0.a + p1.a + p2.a + p3.a) / 4;
+    return r;
+}
+
+void fe_image_test3(const fe_im *src, fe_image *dest, int downscale)
+{
+    int w = src->image.w;
+    int h = src->image.h;
+
+    int x = 0;
+    int y = 0;
+    /*
+    int x = src->x;
+    int y = src->y + 50;
+
+
+    if (x < 0 || ignorePos)
+    {
+    x = 0;
+    }
+    else
+    {
+    w += x;
+    }
+
+    if (y < 0 || ignorePos)
+    {
+    y = 0;
+    }
+    else
+    {
+    h += y;
+    }
+    */
+
+
+
+    ImageData &destIm = *asImage(dest);
+
+    //operations::fill(destIm, Color(32, 0, 0, 32));
+
+
+
+    if (downscale == 2)
+    {
+        fe_image_create(dest, w / 2, h / 2, FE_IMG_B8G8R8A8);
+        PixelB8G8R8A8 pfd;
+
+        const ImageData *srcImage = asImage(&src->image);
+
+        for (int y = 0; y < h / 2; ++y)
+        {
+            int Y = y * 2;
+
+            for (int x = 0; x < w / 2; ++x)
+            {
+                int X = x * 2;
+
+
+                Pixel r;
+
+                switch (src->image.format)
+                {
+                case FE_IMG_R8G8B8A8:
+                {
+                    PixelR8G8B8A8 pf;
+                    r = getPixel4x(pf, srcImage, X, Y);
+                } break;
+                case FE_IMG_B8G8R8A8:
+                {
+                    PixelB8G8R8A8 pf;
+                    r = getPixel4x(pf, srcImage, X, Y);
+                } break;
+                case FE_IMG_A8:
+                {
+                    PixelA8 pf;
+                    r = getPixel4x(pf, srcImage, X, Y);
+                } break;
+                case FE_IMG_DISTANCE:
+                {
+                    PixelDISTANCE pf;
+                    r = getPixel4x(pf, srcImage, X, Y);
+                } break;
+
+                default:
+                    break;
+                }
+
+                pfd.setPixel(asImage(dest)->getPixelPtr(x, y), r);
+            }
+        }
+    }
+    else
+    {
+        fe_image_create(dest, w, h, FE_IMG_B8G8R8A8);
+        operations::op_blit op;
+        operations::applyOperation(op, *asImage(&src->image), destIm.getRect(x, y, src->image.w, src->image.h));
+    }
+
+}
+
+
+template <class SrcPixel, class DestPixel>
+void downsample(const SrcPixel &srcPixel, const DestPixel &destPixel, const ImageData *src, const ImageData *dest)
+{
+    int w = src->w;
+    int h = src->h;
+
+    for (int y = 0; y < h / 2; ++y)
+    {
+        int Y = y * 2;
+
+        for (int x = 0; x < w / 2; ++x)
+        {
+            int X = x * 2;
+
+            Pixel r = getPixel4x(srcPixel, src, X, Y);
+            destPixel.setPixel(dest->getPixelPtr(x, y), r);
+        }
+    }
+}
+
+
+void fe_convert_result(fe_im* src, fe_im* dest, FE_IMAGE_FORMAT dest_format, int convert_options)
+{
+    if (dest_format == TF_UNDEFINED)
+        dest_format = src->image.format;
+
+
+    dest->x = src->x;
+    dest->y = src->y;
+
+    ImageData *srcImage = asImage(&src->image);
+    ImageData *destImage = asImage(&dest->image);
+
+    if (convert_options & fe_convert_option_downsample2x)
+    { 
+        fe_image_create(&dest->image, src->image.w/2, src->image.h/2, dest_format);
+
+                
+        PixelR8G8B8A8 src_pf;
+
+        if (dest_format == FE_IMG_B8G8R8A8)
+        {
+            PixelB8G8R8A8 dest_pf;
+            downsample(src_pf, dest_pf, srcImage, destImage);
+        }
+
+        if (dest_format == FE_IMG_R8G8B8A8)
+        {
+            PixelR8G8B8A8 dest_pf;
+            downsample(src_pf, dest_pf, srcImage, destImage);
+        }
+
+        dest->x /= 2;
+        dest->y /= 2;
+    }
+    else
+    {
+        fe_image_create(&dest->image, src->image.w, src->image.h, dest_format);
+        fe::operations::blit(*srcImage, *destImage);
+    }
+
+    if (convert_options & fe_convert_option_unpremultiply)
+    {
+        fe_image_unpremultiply(&dest->image);
+    }
 }

@@ -65,10 +65,13 @@ int main()
         src_format, pitch, data,
         out_node, &result);
 
+    //result image is ready, it has format FE_IMG_R8G8B8A8 and premultiplied by alpha
 
-    //fe_im result;.image is PREMULTIPLIED with ALPHA
-    //unpremultiply it if you need
-    fe_image_unpremultiply(&result.image);
+    /*
+    //if you want to convert it to B8G8R8A8 format or unpremultiply, use 'fe_convert_result'
+    fe_im result2;
+    fe_convert_result(&result, &result2, FE_IMG_B8G8R8A8, fe_convert_option_unpremultiply | fe_convert_option_downsample2x);
+    */
 
     //use 'result' for rendering your real text
     //we just save it to file

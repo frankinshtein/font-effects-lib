@@ -166,4 +166,15 @@ bool fe_node_apply(
 FONT_EFFECT_EXPORT
 bool fe_node_apply2(int font_size, const fe_im* gl, const fe_node* node, fe_im* res);
 
+
+
+enum fe_convert_option
+{
+    fe_convert_option_downsample2x = 1 << 1,
+    fe_convert_option_unpremultiply = 1 << 2,
+};
+
+FONT_EFFECT_EXPORT
+void fe_convert_result(fe_im* src, fe_im* dest, FE_IMAGE_FORMAT dest_format, int convert_options);
+
 #endif
