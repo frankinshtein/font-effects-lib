@@ -91,7 +91,7 @@ private:
 
 
 
-class PixelDist_GradApply : public PixelDISTANCE
+class PixelDist_GradApply// : public PixelDISTANCE
 {
 public:
     fe_apply_grad grad;
@@ -829,12 +829,17 @@ fe_im fe_get_custom_image(const fe_node* node, const fe_args* args);
 
 fe_im fe_get_outline_image(const fe_node_outline* node, const fe_args* args)
 {
+    return get_mixed_image(&node->base, args);
+
+
+    /*
+
     fe_im src = get_mixed_image(&node->base, args);
 
     int s = sizeof(node->base);
 
-    float rad = node->rad * sqrtf(args->scale);
-    float sharp = node->sharpness * sqrtf(args->scale);
+    float rad = node->base.properties_float[0] * sqrtf(args->scale);
+    float sharp = node->base.properties_float[1] * sqrtf(args->scale);
 
 
     bool outer = rad > 0;
@@ -857,6 +862,45 @@ fe_im fe_get_outline_image(const fe_node_outline* node, const fe_args* args)
     res.y = src.y - eh;
 
     return res;
+
+
+    fe_im src = get_mixed_image(&node->base, args);
+
+
+
+
+    fe_im dest;
+    dest.x = src.x;
+    dest.y = src.y;
+
+    fe_image_create(&dest.image, src.image.w, src.image.h, FE_IMG_R8G8B8A8);
+
+
+    fe_apply_grad ag;
+
+
+    if (src.image.format == FE_IMG_DISTANCE)
+    {
+
+        create_grad(&ag, &node->grad, args->size);
+        ag.plane.d *= args->scale;
+
+
+        operations::op_blit op;
+        PixelR8G8B8A8 destPixel;
+
+        PixelDist_GradApply srcPixelFill(ag, args->scale);
+
+        //printf("dist apply\n");
+        operations::applyOperationT(op, PremultPixel<PixelDist_GradApply>(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
+    }
+
+
+    fe_image_free(&src.image);
+    fe_image_free(&ag.image);
+    //fe_image_safe_tga(&dest.image, "d:/a.tga");
+    return dest;
+    */
 }
 
 fe_im fe_get_distance_field(const fe_node_distance_field* node, const fe_args* args)
@@ -1114,8 +1158,9 @@ fe_node_outline* fe_node_outline_alloc()
 {
     fe_node_outline* node = (fe_node_outline*)_fe_alloc(sizeof(fe_node_outline));
     fe_node_init(&node->base, fe_node_type_outline, (get_node_image)fe_get_outline_image);
-    node->rad = 1.0f;
-    node->sharpness = 1.0f;
+    node->base.properties_float[0] = 1.0f;
+    node->base.properties_float[1] = 1.0f;
+
     return node;
 }
 

@@ -100,8 +100,6 @@ typedef struct  fe_node_fill
 typedef struct  fe_node_outline
 {
     fe_node base;
-    float rad;
-    float sharpness;
 } fe_node_outline;
 
 typedef struct  fe_node_mix

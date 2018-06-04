@@ -292,14 +292,6 @@ fe_node* fe_load_node(fe_state& s)
 
         } break;
 
-        case fe_node_type_outline:
-        {
-            fe_node_outline* no = fe_node_outline_alloc();
-            node = &no->base;
-            no->rad = READ_FLOAT(s);
-            no->sharpness = READ_FLOAT(s);
-        }   break;
-
         default:
         {
             node = fe_node_alloc(nd.type);
