@@ -219,7 +219,7 @@ public:
     float _sharp;
     bool inv;
 
-    PixelDist_apply(float rad, float sharp, float S) : _rad(rad), _sharp(sharp), _s(S), inv(false)
+    PixelDist_apply(float rad, float sharp, float S) : _rad(rad), _sharp(1.0f / sharp), _s(S), inv(false)
     {
         /*
         if (rad < 0)
@@ -259,9 +259,9 @@ public:
             }
             else
             {
-                if (dist < _rad + 1)
+                if (dist < _rad + _sharp)
                 {
-                    float a = 1.0f - (dist - _rad);
+                    float a = (_sharp - (dist - _rad))/ _sharp;
                     z = int(a * 255.0f);
                 }
             }
