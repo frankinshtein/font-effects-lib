@@ -91,13 +91,13 @@ private:
 
 
 
-class PixelDist_GradApply// : public PixelDISTANCE
+class PixelDist_GradApply
 {
 public:
     fe_apply_grad grad;
     float s;
 
-    PixelDist_GradApply(const fe_apply_grad& Grad, float S): grad(Grad),  s(S)
+    PixelDist_GradApply(const fe_apply_grad& Grad, float S) : grad(Grad), s(S)
     {
     }
 
@@ -116,9 +116,6 @@ public:
         const fe_plane& plane = grad.plane;
         const fe_image& image = grad.image;
 
-        if (x == 4 && y == 4)
-            int qwewq = 0;
-
         const PixDist* pp = (PixDist*)data;
 
         float d1 = pp->d1;
@@ -132,15 +129,15 @@ public:
 
         //d2 = 0;
 
-		float dist = d1;// -d2;
-        //if (d1 > 0 && dist < 0)
-        //  dist = d1;
-        //if (dist < 0)
-        //dist = 0;
+        float dist = d1;// -d2;
+                        //if (d1 > 0 && dist < 0)
+                        //  dist = d1;
+                        //if (dist < 0)
+                        //dist = 0;
         dist = 60.0f * s + (dist) * 3.5f;// -d2;
-        //dist *= s;
+                                         //dist *= s;
 
-        //float dist = x * plane.a + y * plane.b - plane.d + d;
+                                         //float dist = x * plane.a + y * plane.b - plane.d + d;
 
         int gx = int(dist * plane.scale);
         if (gx >= image.w)
@@ -155,26 +152,26 @@ public:
         /*
         if (dist <= 0)
         {
-            float f = (-dist - 1);
-            int a = 255 - f * (255 / 2);
-            if (a < 0)
-                a = 0;
-            if (a > 255)
-                a = 255;
-            g.a = a;
+        float f = (-dist - 1);
+        int a = 255 - f * (255 / 2);
+        if (a < 0)
+        a = 0;
+        if (a > 255)
+        a = 255;
+        g.a = a;
         }
         else
-            g.a = 255;
+        g.a = 255;
 
         if (dist > 0)
         {
-            float f = (dist - 1);
-            int a = 255 - f * (255 / 2);
-            if (a < 0)
-                a = 0;
-            if (a > 255)
-                a = 255;
-            g.a = a;
+        float f = (dist - 1);
+        int a = 255 - f * (255 / 2);
+        if (a < 0)
+        a = 0;
+        if (a > 255)
+        a = 255;
+        g.a = a;
         }
         */
 
@@ -209,6 +206,78 @@ public:
 private:
     PixelDist_GradApply(const PixelDist_GradApply&);
     void operator = (const PixelDist_GradApply&);
+};
+
+
+
+class PixelDist_apply
+{
+public:
+    //fe_apply_grad grad;
+    float _s;
+    float _rad;
+    float _sharp;
+    bool inv;
+
+    PixelDist_apply(float rad, float sharp, float S) : _rad(rad), _sharp(sharp), _s(S), inv(false)
+    {
+        /*
+        if (rad < 0)
+        {
+            inv = true;
+            rad = -rad;
+        }
+        */
+        _rad = rad * _s;
+    }
+
+    ~PixelDist_apply()
+    {
+
+    }
+
+    void getPixel(GET_PIXEL_ARGS) const
+    {
+        const PixDist* pp = (PixDist*)data;
+
+        float d1 = pp->d1;
+
+        float dist = -d1;
+        if (inv)
+            dist = -dist;
+        
+        int z = 0;
+        if (dist < 0)
+        {
+            z = 255;
+        }
+        else
+        {
+            if (dist < _rad)
+            {
+                z = 255;
+            }
+            else
+            {
+                if (dist < _rad + 1)
+                {
+                    float a = 1.0f - (dist - _rad);
+                    z = int(a * 255.0f);
+                }
+            }
+        }
+
+
+        p.r = 255;
+        p.g = 255;
+        p.b = 255;
+
+        p.a = z;
+    }
+
+private:
+    PixelDist_apply(const PixelDist_apply&);
+    void operator = (const PixelDist_apply&);
 };
 
 
@@ -729,9 +798,6 @@ fe_im fe_get_fill(const fe_node_fill* node, const fe_args* args)
 {
     fe_im src = get_mixed_image(&node->base, args);
 
-
-
-
     fe_im dest;
     dest.x = src.x;
     dest.y = src.y;
@@ -827,46 +893,17 @@ fe_im fe_get_mix_image(const fe_node_image* node, const fe_args* args)
 
 fe_im fe_get_custom_image(const fe_node* node, const fe_args* args);
 
+
 fe_im fe_get_outline_image(const fe_node_outline* node, const fe_args* args)
 {
-    return get_mixed_image(&node->base, args);
-
-
-    /*
-
     fe_im src = get_mixed_image(&node->base, args);
-
-    int s = sizeof(node->base);
-
-    float rad = node->base.properties_float[0] * sqrtf(args->scale);
-    float sharp = node->base.properties_float[1] * sqrtf(args->scale);
+    
 
 
-    bool outer = rad > 0;
-    if (!outer)
-        rad = -rad;
-
-    int ew = int(rad + sharp) + 1;
-    int eh = ew;
-
-    ImageData imStroke;
-    fe_image_create(&imStroke, src.image.w + ew * 2, src.image.h + eh * 2, FE_IMG_A8);
-    operations::fill(imStroke, Color(0, 0, 0, 0));
-    operations::blit(*asImage(&src.image), imStroke.getRect(ew, eh, src.image.w, src.image.h));
-
-    buildSDF(imStroke, rad, sharp, outer, imStroke, false);
-
-    fe_im res;
-    res.image = imStroke;
-    res.x = src.x - ew;
-    res.y = src.y - eh;
-
-    return res;
-
-
-    fe_im src = get_mixed_image(&node->base, args);
-
-
+    if (src.image.format != FE_IMG_DISTANCE)
+    { 
+        return src;
+    }
 
 
     fe_im dest;
@@ -876,31 +913,19 @@ fe_im fe_get_outline_image(const fe_node_outline* node, const fe_args* args)
     fe_image_create(&dest.image, src.image.w, src.image.h, FE_IMG_R8G8B8A8);
 
 
-    fe_apply_grad ag;
+    operations::op_blit op;
+    PixelR8G8B8A8 destPixel;
 
+    PixelDist_apply srcPixelFill(node->base.properties_float[0], node->base.properties_float[1], args->scale);
 
-    if (src.image.format == FE_IMG_DISTANCE)
-    {
-
-        create_grad(&ag, &node->grad, args->size);
-        ag.plane.d *= args->scale;
-
-
-        operations::op_blit op;
-        PixelR8G8B8A8 destPixel;
-
-        PixelDist_GradApply srcPixelFill(ag, args->scale);
-
-        //printf("dist apply\n");
-        operations::applyOperationT(op, PremultPixel<PixelDist_GradApply>(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
-    }
+    //printf("dist apply\n");
+    operations::applyOperationT(op, PremultPixel<PixelDist_apply>(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
+    
 
 
     fe_image_free(&src.image);
-    fe_image_free(&ag.image);
     //fe_image_safe_tga(&dest.image, "d:/a.tga");
     return dest;
-    */
 }
 
 fe_im fe_get_distance_field(const fe_node_distance_field* node, const fe_args* args)
