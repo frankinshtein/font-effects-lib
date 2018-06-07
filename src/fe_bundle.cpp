@@ -431,9 +431,12 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
 
     for (int i = 0; i < num; ++i)
     {
-        effect->nodes[i] = fe_load_node(s);
-        CHECK_ERR();
-        effect->nodes[i]->effect = effect;        
+        fe_node *node = fe_load_node(s);
+        node->effect = effect;
+        node->index = i;
+
+        effect->nodes[i] = node;
+        CHECK_ERR();        
     }
 
     read_fixed(s, "@edges");

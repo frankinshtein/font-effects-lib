@@ -21,11 +21,19 @@ typedef struct fe_im
     int y;
 } fe_im;
 
+
+
+typedef struct fe_nodes_cache
+{
+    fe_im* images;
+} fe_nodes_cache;
+
 typedef struct fe_args
 {
     int size;
     fe_im base;
     float scale;
+    fe_nodes_cache cache;
 } fe_args;
 
 typedef fe_im(*get_node_image)(const struct fe_node*, const struct fe_args*);
@@ -54,6 +62,7 @@ typedef struct fe_node
     int   properties_int[FE_MAX_PROPS];
 
     struct fe_effect *effect;
+    int index;
 
     char name[16];    
     int vis_x;

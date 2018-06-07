@@ -26,6 +26,7 @@ void image_free_malloc(fe_image* im)
 {
     _fe_free(im->data);
     im->data = 0;
+    im->free = 0;
 }
 
 void fe_image_create(fe_image* im, int w, int h, FE_IMAGE_FORMAT f)
@@ -42,11 +43,8 @@ void fe_image_create(fe_image* im, int w, int h, FE_IMAGE_FORMAT f)
 
 void fe_image_free(fe_image* im)
 {
-    if (im->free)
-    {
+    if (im->free)    
         im->free(im);
-        im->free = 0;
-    }
 }
 
 fe_image fe_image_get_rect(const fe_image* im, int x, int y, int w, int h)

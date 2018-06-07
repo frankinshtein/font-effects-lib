@@ -670,6 +670,14 @@ void fe_im_empty(fe_im& empty)
 
 fe_im get_image(const fe_node* node, const fe_args* args)
 {
+    if (args->cache.images && args->cache.images[node->index].image.data)
+    {
+        fe_im res = args->cache.images[node->index];
+        res.image.free = 0;
+        return res;
+    }
+    
+
     fe_im r = node->get_image(node, args);
 
     r.x += static_cast<int>(node->x * args->scale);
@@ -680,6 +688,12 @@ fe_im get_image(const fe_node* node, const fe_args* args)
     sprintf(str, "d:/temp/im/%d.tga", node->id);
     fe_image_save_tga(&r.image, str);
 #endif
+
+    if (args->cache.images)
+    {
+        args->cache.images[node->index] = r;
+        r.image.free = 0;
+    }
 
     return r;
 }
@@ -786,6 +800,7 @@ void fe_node_init(fe_node* node, int tp, get_node_image f)
     node->flags = 0;
     node->type = tp;
     node->effect = 0;
+    node->index = -1;
     node->name[0] = 0;
     for (int i = 0; i < FE_MAX_PINS; ++i)
         node->in[i].node = 0;
@@ -1298,11 +1313,22 @@ bool fe_node_apply2(int font_size, const fe_im* gl, const fe_node* node,  fe_im*
     args.base = *gl;
     args.base.y = font_size - args.base.y;
     args.base.image.free = 0;//can't delete not owner
-    args.scale = font_size / 100.0f;
+    args.scale = font_size / 100.0f;    
+    int size = sizeof(fe_im) * node->effect->num;
+    args.cache.images = (fe_im*)alloca(size);
+    memset(args.cache.images, 0, size);
+
 
     *res = get_image(node, &args);
-
     res->y = font_size - res->y;
+
+    res->image.free = args.cache.images[node->index].image.free;
+    args.cache.images[node->index].image.free = 0;
+
+    for (int i = 0; i < node->effect->num; ++i)    
+        fe_image_free(&args.cache.images[i].image);
+
+    
 
     return true;
 }
