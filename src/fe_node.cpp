@@ -670,9 +670,10 @@ void fe_im_empty(fe_im& empty)
 
 fe_im get_image(const fe_node* node, const fe_args* args)
 {
-    if (args->cache.images && args->cache.images[node->index].image.data)
+    fe_im *cached = args->cache.images;
+    if (cached && cached[node->index].image.data)
     {
-        fe_im res = args->cache.images[node->index];
+        fe_im res = cached[node->index];
         res.image.free = 0;
         return res;
     }
@@ -689,9 +690,9 @@ fe_im get_image(const fe_node* node, const fe_args* args)
     fe_image_save_tga(&r.image, str);
 #endif
 
-    if (args->cache.images)
+    if (cached)
     {
-        args->cache.images[node->index] = r;
+        cached[node->index] = r;
         r.image.free = 0;
     }
 
@@ -1376,104 +1377,6 @@ Pixel getPixel4x(const T& pf, const ImageData *src, int X, int Y)
     r.a = (p0.a + p1.a + p2.a + p3.a) / 4;
     return r;
 }
-
-void fe_image_test3(const fe_im *src, fe_image *dest, int downscale)
-{
-    int w = src->image.w;
-    int h = src->image.h;
-
-    int x = 0;
-    int y = 0;
-    /*
-    int x = src->x;
-    int y = src->y + 50;
-
-
-    if (x < 0 || ignorePos)
-    {
-    x = 0;
-    }
-    else
-    {
-    w += x;
-    }
-
-    if (y < 0 || ignorePos)
-    {
-    y = 0;
-    }
-    else
-    {
-    h += y;
-    }
-    */
-
-
-
-    ImageData &destIm = *asImage(dest);
-
-    //operations::fill(destIm, Color(32, 0, 0, 32));
-
-
-
-    if (downscale == 2)
-    {
-        fe_image_create(dest, w / 2, h / 2, FE_IMG_B8G8R8A8);
-        PixelB8G8R8A8 pfd;
-
-        const ImageData *srcImage = asImage(&src->image);
-
-        for (int y = 0; y < h / 2; ++y)
-        {
-            int Y = y * 2;
-
-            for (int x = 0; x < w / 2; ++x)
-            {
-                int X = x * 2;
-
-
-                Pixel r;
-
-                switch (src->image.format)
-                {
-                case FE_IMG_R8G8B8A8:
-                {
-                    PixelR8G8B8A8 pf;
-                    r = getPixel4x(pf, srcImage, X, Y);
-                } break;
-                case FE_IMG_B8G8R8A8:
-                {
-                    PixelB8G8R8A8 pf;
-                    r = getPixel4x(pf, srcImage, X, Y);
-                } break;
-                case FE_IMG_A8:
-                {
-                    PixelA8 pf;
-                    r = getPixel4x(pf, srcImage, X, Y);
-                } break;
-                case FE_IMG_DISTANCE:
-                {
-                    PixelDISTANCE pf;
-                    r = getPixel4x(pf, srcImage, X, Y);
-                } break;
-
-                default:
-                    break;
-                }
-
-                pfd.setPixel(asImage(dest)->getPixelPtr(x, y), r);
-            }
-        }
-    }
-    else
-    {
-        fe_image_create(dest, w, h, FE_IMG_B8G8R8A8);
-        operations::op_blit op;
-        operations::applyOperation(op, *asImage(&src->image), destIm.getRect(x, y, src->image.w, src->image.h));
-    }
-
-}
-
 
 template <class SrcPixel, class DestPixel>
 void downsample(const SrcPixel &srcPixel, const DestPixel &destPixel, const ImageData *src, const ImageData *dest)
