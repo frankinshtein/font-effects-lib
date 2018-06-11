@@ -96,7 +96,7 @@ enum fe_node_type
 
 enum fe_const_param
 {
-    fe_const_param_df_deprecated = 0,
+    fe_const_param_distance_field_rad = 0,
 
     fe_const_param_outline_rad = 0,
     fe_const_param_outline_sharpness = 1,

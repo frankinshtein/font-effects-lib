@@ -1209,7 +1209,7 @@ fe_node_distance_field*  fe_node_distance_field_alloc()
 {
     fe_node_distance_field* node = (fe_node_distance_field*)_fe_alloc(sizeof(fe_node_distance_field));
     fe_node_init(&node->base, fe_node_type_distance_field, (get_node_image)fe_get_distance_field);
-    node->base.properties_float[fe_const_param_df_deprecated] = 10.0f;
+    node->base.properties_float[fe_const_param_distance_field_rad] = 10.0f;
     node->rad = 10.0f;
     return node;
 }
