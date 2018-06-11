@@ -254,6 +254,51 @@ fe_node* fe_load_node(fe_state& s)
             s.data++;
             fe_grad* grad = &nf->grad;
 
+            //read colors
+            int colors = READ_INT(s);
+            grad->colors_num = colors;
+            for (int i = 0; i < colors; ++i)
+            {
+                read_token(s);
+                CHECK_ERR();
+
+                fe_color* c = &grad->colors[i];
+
+                parse_color(s.token, c);
+
+                grad->colors_pos[i] = READ_FLOAT(s);
+            }
+
+            //read alpha
+            int alpha_num = READ_INT(s);
+            grad->alpha_num = alpha_num;
+            for (int i = 0; i < alpha_num; ++i)
+            {
+                read_token(s);
+                CHECK_ERR();
+
+                unsigned char* c = &grad->alpha[i];
+
+                parse_alpha(s.token, c);
+
+                grad->alpha_pos[i] = READ_FLOAT(s);
+            }
+
+            grad->plane.a = READ_FLOAT(s);
+            grad->plane.b = READ_FLOAT(s);
+            grad->plane.d = READ_FLOAT(s);
+            grad->plane.scale = READ_FLOAT(s);
+
+        } break;
+
+        case fe_node_type_fill_radial:
+        {
+            fe_node_fill_radial* nf = fe_node_fill_radial_alloc();
+
+            node = &nf->base;
+
+            s.data++;
+            fe_grad* grad = &nf->grad;
 
             //read colors
             int colors = READ_INT(s);
