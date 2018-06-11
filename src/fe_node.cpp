@@ -881,6 +881,77 @@ fe_im fe_get_fill(const fe_node_fill* node, const fe_args* args)
 }
 
 
+fe_im fe_get_fill_radial(const fe_node_fill* node, const fe_args* args)
+{
+    fe_im src = get_mixed_image(&node->base, args);
+
+    fe_im dest;
+    dest.x = src.x;
+    dest.y = src.y;
+
+    fe_image_create(&dest.image, src.image.w, src.image.h, FE_IMG_R8G8B8A8);
+
+
+    fe_apply_grad ag;
+
+
+    if (src.image.format == FE_IMG_DISTANCE)
+    {
+
+        create_grad(&ag, &node->grad, args->size);
+        ag.plane.d *= args->scale;
+
+
+        operations::op_blit op;
+        PixelR8G8B8A8 destPixel;
+
+        PixelDist_GradApply srcPixelFill(ag, args->scale);
+
+        //printf("dist apply\n");
+        operations::applyOperationT(op, PremultPixel<PixelDist_GradApply>(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
+    }
+    else
+    {
+
+        float sz = args->size / node->grad.plane.scale;
+        int gsize = static_cast<int>(sz * 2); //need more colors for good gradient
+        float gscale = gsize / sz;
+
+        create_grad(&ag, &node->grad, gsize);
+        ag.plane.d *= args->scale;
+
+        float as = gscale;
+
+        ag.plane.a *= as;
+        ag.plane.b *= as;
+        ag.plane.d *= as;
+
+        float D = src.x * ag.plane.a + src.y * ag.plane.b;
+
+
+
+
+        operations::op_blit op;
+        PixelR8G8B8A8 destPixel;
+        if (src.image.bytespp == 1)
+        {
+            PixelR8G8B8A8_GradApply<PixelA8> srcPixelFill(ag, D, args->scale);
+            operations::applyOperationT(op, PremultPixel<PixelR8G8B8A8_GradApply<PixelA8> >(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
+        }
+        else
+        {
+            PixelR8G8B8A8_GradApply<PixelR8G8B8A8> srcPixelFill(ag, D, args->scale);
+            operations::applyOperationT(op, PremultPixel<PixelR8G8B8A8_GradApply<PixelR8G8B8A8> >(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
+        }
+    }
+
+    fe_image_free(&src.image);
+    fe_image_free(&ag.image);
+    //fe_image_safe_tga(&dest.image, "d:/a.tga");
+    return dest;
+}
+
+
 fe_im fe_get_image(const fe_node_image* node, const fe_args* args)
 {
     fe_im im = args->base;
@@ -948,9 +1019,41 @@ fe_im fe_get_distance_field(const fe_node_distance_field* node, const fe_args* a
 {
     fe_im src = get_mixed_image(&node->base, args);
 
-    int s = sizeof(node->base);
+    float rad = node->base.properties_float[fe_const_param_distance_field_rad] * sqrtf(args->scale);
 
-    float rad = node->rad * sqrtf(args->scale);
+    bool outer = rad > 0;
+    if (!outer)
+        rad = -rad;
+
+    int ew = int(rad) + 1;
+    int eh = ew;
+
+    ImageData imSrc;
+    fe_image_create(&imSrc, src.image.w + ew * 2, src.image.h + eh * 2, FE_IMG_A8);
+    operations::fill(imSrc, Color(0, 0, 0, 0));
+    operations::blit(*asImage(&src.image), imSrc.getRect(ew, eh, src.image.w, src.image.h));
+
+    ImageData imDist;
+    fe_image_create(&imDist, imSrc.w, imSrc.h, FE_IMG_DISTANCE);
+    buildSDF(imSrc, rad, 0, outer, imDist, true);
+
+    fe_image_free(&src.image);
+    fe_image_free(&imSrc);
+
+    fe_im res;
+    res.image = imDist;
+    res.x = src.x - ew;
+    res.y = src.y - eh;
+
+    return res;
+}
+
+fe_im fe_get_distance_field_auto(const fe_node_distance_field* node, const fe_args* args)
+{
+    fe_im src = get_mixed_image(&node->base, args);
+
+
+    float rad = args->cache.images[node->base.index].df_rad * sqrtf(args->scale);
 
     bool outer = rad > 0;
     if (!outer)
@@ -1006,7 +1109,7 @@ fe_im fe_get_subtract(const fe_node* node, const fe_args* args)
         int th = b - t;
 
         ImageData destRC =  asImage(&base.image)->getRect(l - base.x, t - base.y, tw, th);
-        ImageData srcRC  =     asImage(&c.image)->getRect(l - c.x,    t - c.y,    tw, th);
+        ImageData srcRC  =  asImage(&c.image)->getRect(l - c.x,    t - c.y,    tw, th);
 
         operations::op_blend_subtract op;
         operations::applyOperation(op, srcRC, destRC);
@@ -1210,7 +1313,13 @@ fe_node_distance_field*  fe_node_distance_field_alloc()
     fe_node_distance_field* node = (fe_node_distance_field*)_fe_alloc(sizeof(fe_node_distance_field));
     fe_node_init(&node->base, fe_node_type_distance_field, (get_node_image)fe_get_distance_field);
     node->base.properties_float[fe_const_param_distance_field_rad] = 10.0f;
-    node->rad = 10.0f;
+    return node;
+}
+
+fe_node*  fe_node_distance_field_auto_alloc()
+{
+    fe_node* node = (fe_node*)_fe_alloc(sizeof(fe_node));
+    fe_node_init(node, fe_node_type_distance_field_auto, (get_node_image)fe_get_distance_field_auto);
     return node;
 }
 
@@ -1251,6 +1360,28 @@ fe_node_fill* fe_node_fill_alloc()
     return node;
 }
 
+fe_node_fill_radial* fe_node_fill_radial_alloc()
+{
+    fe_node_fill_radial* node = (fe_node_fill_radial*)_fe_alloc(sizeof(fe_node_fill_radial));
+    fe_node_init(&node->base, fe_node_type_fill_radial, (get_node_image)fe_get_fill_radial);
+
+    node->grad.colors_num = 1;
+    node->grad.colors[0].value = 0xffffffff;
+    node->grad.colors_pos[0] = 0;
+
+    node->grad.alpha_num = 1;
+    node->grad.alpha[0] = 255;
+    node->grad.alpha_pos[0] = 0;
+
+
+    node->grad.plane.a = 0;
+    node->grad.plane.b = 1;
+    node->grad.plane.d = 0;
+    node->grad.plane.scale = 1;
+
+    return node;
+}
+
 fe_node* fe_node_alloc(int node_type)
 {
     fe_node_type nt = (fe_node_type)node_type;
@@ -1268,12 +1399,16 @@ fe_node* fe_node_alloc(int node_type)
             return (fe_node*)fe_node_image_fixed_alloc();
         case fe_node_type_fill:
             return (fe_node*)fe_node_fill_alloc();
+        case fe_node_type_fill_radial:
+            return (fe_node*)fe_node_fill_radial_alloc();
         case fe_node_type_outline:
             return (fe_node*)fe_node_outline_alloc();
         case fe_node_type_mix:
             return (fe_node*)fe_node_mix_alloc();
         case fe_node_type_distance_field:
             return (fe_node*)fe_node_distance_field_alloc();
+        case fe_node_type_distance_field_auto:
+            return (fe_node*)fe_node_distance_field_auto_alloc();
         case fe_node_type_out:
             return (fe_node*)fe_node_out_alloc();
         case fe_node_type_stroke_simple:
@@ -1319,7 +1454,7 @@ void _fe_node_connect(const fe_node* src, fe_node* dest, int pin)
 
 
         fe_node_distance_field *dfnode = (fe_node_distance_field *)src;
-        dfnode->rad = std::max(rad, dfnode->rad);
+        //dfnode->rad = std::max(rad, dfnode->rad);
     }
 }
 
@@ -1333,26 +1468,42 @@ int fe_node_get_in_node_id(const fe_node* node, int i)
 
 void update_df_rad(const fe_node* node, fe_args* args)
 {
-//    if (node->type == fe_node_type_distance_field)
-  //      args->cache.images[node->index] = 
+    if (node->type == fe_node_type_fill_radial)
+    {
+        const fe_node* in = node->in[0].node;
+        if (in)
+        {
+            float &rad = args->cache.images[in->index].df_rad;
+            rad = std::max(rad, node->properties_float[fe_const_param_fill_radial_rad]);
+        }
+    }
+
+
+    for (int i = 0; i < FE_MAX_PINS; ++i)
+    {
+        const fe_node* in = node->in[i].node;
+        if (in)
+            update_df_rad(in, args);        
+    }
 }
 
-bool fe_node_apply2(int font_size, const fe_im* gl, const fe_node* node,  fe_im* res)
+bool fe_node_apply_internal(int font_size, const fe_im* gl, const fe_node* node, fe_im* res, int num)
 {
     fe_args args;
     args.size = font_size;
     args.base = *gl;
     args.base.y = font_size - args.base.y;
     args.base.image.free = 0;//can't delete not owner
-    args.scale = font_size / 100.0f;    
+    args.scale = font_size / 100.0f;
 
-    int size = sizeof(fe_im_cache) * node->effect->num;    
+    int size = sizeof(fe_im_cache) * num;
     fe_im_cache *imc = (fe_im_cache*)alloca(size);
     args.cache.images = imc;
+    args.cache.num = num;
 
     memset(imc, 0, size);
 
-    for (int i = 0; i < node->effect->num; ++i)    
+    for (int i = 0; i < num; ++i)
         imc[i].df_rad = 0.0f;
 
     update_df_rad(node, &args);
@@ -1363,10 +1514,15 @@ bool fe_node_apply2(int font_size, const fe_im* gl, const fe_node* node,  fe_im*
     res->image.free = imc[node->index].image.image.free;
     imc[node->index].image.image.free = 0;
 
-    for (int i = 0; i < node->effect->num; ++i)
+    for (int i = 0; i < num; ++i)
         fe_image_free(&imc[i].image.image);
 
     return true;
+}
+
+bool fe_node_apply2(int font_size, const fe_im* gl, const fe_node* node,  fe_im* res)
+{
+    return fe_node_apply_internal(font_size, gl, node, res, node->effect->num);
 }
 
 bool fe_node_apply(

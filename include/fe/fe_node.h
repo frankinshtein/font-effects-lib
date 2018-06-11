@@ -33,6 +33,7 @@ typedef struct fe_im_cache
 typedef struct fe_nodes_cache
 {
     fe_im_cache* images;
+    int num;
 } fe_nodes_cache;
 
 typedef struct fe_args
@@ -40,7 +41,7 @@ typedef struct fe_args
     int size;
     fe_im base;
     float scale;
-    fe_nodes_cache cache;
+    fe_nodes_cache cache;    
 } fe_args;
 
 typedef fe_im(*get_node_image)(const struct fe_node*, const struct fe_args*);
@@ -87,6 +88,8 @@ enum fe_node_type
     fe_node_type_distance_field = 6,
     fe_node_type_subtract = 7,
     fe_node_type_stroke_simple = 10,
+    fe_node_type_distance_field_auto = 11,
+    fe_node_type_fill_radial = 12,
     fe_node_type_out = 50,
     fe_node_type_source_text = 60,
     fe_node_type_out_group = 61,
@@ -103,6 +106,8 @@ enum fe_const_param
 
     fe_const_param_df_fill_rad = 0,
     fe_const_param_stroke_sharpness = 0,
+
+    fe_const_param_fill_radial_rad = 0,
 };
 
 typedef struct  fe_node_image
@@ -125,6 +130,13 @@ typedef struct  fe_node_fill
 
 } fe_node_fill;
 
+typedef struct  fe_node_fill_radial
+{
+    fe_node base;
+    fe_grad grad;
+
+} fe_node_fill_radial;
+
 typedef struct  fe_node_outline
 {
     fe_node base;
@@ -143,7 +155,7 @@ typedef struct  fe_node_out
 typedef struct  fe_node_distance_field
 {
     fe_node base;
-    float rad;
+    //float rad;
 } fe_node_distance_field;
 
 
@@ -162,6 +174,10 @@ FONT_EFFECT_EXPORT fe_node*                 fe_node_subtract_alloc();
 FONT_EFFECT_EXPORT fe_node_out*             fe_node_out_alloc();
 FONT_EFFECT_EXPORT fe_node_outline*         fe_node_outline_alloc();
 FONT_EFFECT_EXPORT fe_node_distance_field*  fe_node_distance_field_alloc();
+FONT_EFFECT_EXPORT fe_node*                 fe_node_distance_field_auto_alloc();
+FONT_EFFECT_EXPORT fe_node_fill_radial*     fe_node_fill_radial_alloc();
+
+
 FONT_EFFECT_EXPORT fe_node*                 fe_node_alloc(int node_type);
 
 FONT_EFFECT_EXPORT
