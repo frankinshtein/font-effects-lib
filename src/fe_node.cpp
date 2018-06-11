@@ -670,10 +670,10 @@ void fe_im_empty(fe_im& empty)
 
 fe_im get_image(const fe_node* node, const fe_args* args)
 {
-    fe_im *cached = args->cache.images;
-    if (cached && cached[node->index].image.data)
+    fe_im_cache *cached = args->cache.images;
+    if (cached && cached[node->index].image.image.data)
     {
-        fe_im res = cached[node->index];
+        fe_im res = cached[node->index].image;
         res.image.free = 0;
         return res;
     }
@@ -692,7 +692,7 @@ fe_im get_image(const fe_node* node, const fe_args* args)
 
     if (cached)
     {
-        cached[node->index] = r;
+        cached[node->index].image = r;
         r.image.free = 0;
     }
 
@@ -932,7 +932,7 @@ fe_im fe_get_outline_image(const fe_node_outline* node, const fe_args* args)
     operations::op_blit op;
     PixelR8G8B8A8 destPixel;
 
-    PixelDist_apply srcPixelFill(node->base.properties_float[0], node->base.properties_float[1], args->scale);
+    PixelDist_apply srcPixelFill(node->base.properties_float[fe_const_param_outline_rad], node->base.properties_float[fe_const_param_outline_sharpness], args->scale);
 
     //printf("dist apply\n");
     operations::applyOperationT(op, PremultPixel<PixelDist_apply>(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
@@ -950,7 +950,7 @@ fe_im fe_get_distance_field(const fe_node_distance_field* node, const fe_args* a
 
     int s = sizeof(node->base);
 
-    float rad = node->base.properties_float[0] * sqrtf(args->scale);
+    float rad = node->rad * sqrtf(args->scale);
 
     bool outer = rad > 0;
     if (!outer)
@@ -1042,7 +1042,7 @@ fe_im fe_get_stroke_simple(const fe_node* node, const fe_args* args)
 
     fe_image src = mixed.image;
 
-    float sp = node->properties_float[0];
+    float sp = node->properties_float[fe_const_param_stroke_sharpness];
     bool invert = false;
     if (sp < 0)
     {
@@ -1199,8 +1199,8 @@ fe_node_outline* fe_node_outline_alloc()
 {
     fe_node_outline* node = (fe_node_outline*)_fe_alloc(sizeof(fe_node_outline));
     fe_node_init(&node->base, fe_node_type_outline, (get_node_image)fe_get_outline_image);
-    node->base.properties_float[0] = 1.0f;
-    node->base.properties_float[1] = 1.0f;
+    node->base.properties_float[fe_const_param_outline_rad] = 1.0f;
+    node->base.properties_float[fe_const_param_outline_sharpness] = 1.0f;
 
     return node;
 }
@@ -1209,7 +1209,8 @@ fe_node_distance_field*  fe_node_distance_field_alloc()
 {
     fe_node_distance_field* node = (fe_node_distance_field*)_fe_alloc(sizeof(fe_node_distance_field));
     fe_node_init(&node->base, fe_node_type_distance_field, (get_node_image)fe_get_distance_field);
-    node->base.properties_float[0] = 10.0f;
+    node->base.properties_float[fe_const_param_df_deprecated] = 10.0f;
+    node->rad = 10.0f;
     return node;
 }
 
@@ -1297,6 +1298,29 @@ void _fe_node_free(fe_node* node)
 void _fe_node_connect(const fe_node* src, fe_node* dest, int pin)
 {
     dest->in[pin].node = src;
+
+    if (src->type == fe_node_type_distance_field)
+    {
+        float rad = 0;
+
+        if (dest->type == fe_node_type_outline)
+        {
+            fe_node_outline *nd = (fe_node_outline *)dest;
+            //nd->base
+            //onode->base.properties_float[0]
+        }
+
+        if (dest->type == fe_node_type_fill)
+        {
+            fe_node_fill *nd = (fe_node_fill*)dest;
+            //nd->
+            //onode->base.properties_float[0]
+        }
+
+
+        fe_node_distance_field *dfnode = (fe_node_distance_field *)src;
+        dfnode->rad = std::max(rad, dfnode->rad);
+    }
 }
 
 int fe_node_get_in_node_id(const fe_node* node, int i)
@@ -1307,6 +1331,12 @@ int fe_node_get_in_node_id(const fe_node* node, int i)
     return 0;
 }
 
+void update_df_rad(const fe_node* node, fe_args* args)
+{
+//    if (node->type == fe_node_type_distance_field)
+  //      args->cache.images[node->index] = 
+}
+
 bool fe_node_apply2(int font_size, const fe_im* gl, const fe_node* node,  fe_im* res)
 {
     fe_args args;
@@ -1315,21 +1345,26 @@ bool fe_node_apply2(int font_size, const fe_im* gl, const fe_node* node,  fe_im*
     args.base.y = font_size - args.base.y;
     args.base.image.free = 0;//can't delete not owner
     args.scale = font_size / 100.0f;    
-    int size = sizeof(fe_im) * node->effect->num;
-    args.cache.images = (fe_im*)alloca(size);
-    memset(args.cache.images, 0, size);
 
+    int size = sizeof(fe_im_cache) * node->effect->num;    
+    fe_im_cache *imc = (fe_im_cache*)alloca(size);
+    args.cache.images = imc;
+
+    memset(imc, 0, size);
+
+    for (int i = 0; i < node->effect->num; ++i)    
+        imc[i].df_rad = 0.0f;
+
+    update_df_rad(node, &args);
 
     *res = get_image(node, &args);
     res->y = font_size - res->y;
 
-    res->image.free = args.cache.images[node->index].image.free;
-    args.cache.images[node->index].image.free = 0;
+    res->image.free = imc[node->index].image.image.free;
+    imc[node->index].image.image.free = 0;
 
-    for (int i = 0; i < node->effect->num; ++i)    
-        fe_image_free(&args.cache.images[i].image);
-
-    
+    for (int i = 0; i < node->effect->num; ++i)
+        fe_image_free(&imc[i].image.image);
 
     return true;
 }

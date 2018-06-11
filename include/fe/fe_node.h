@@ -22,10 +22,17 @@ typedef struct fe_im
 } fe_im;
 
 
+typedef struct fe_im_cache
+{
+    fe_im image;
+    float df_rad;
+} fe_im_cache;
+
+
 
 typedef struct fe_nodes_cache
 {
-    fe_im* images;
+    fe_im_cache* images;
 } fe_nodes_cache;
 
 typedef struct fe_args
@@ -86,6 +93,18 @@ enum fe_node_type
     fe_node_type_custom = 100,
 };
 
+
+enum fe_const_param
+{
+    fe_const_param_df_deprecated = 0,
+
+    fe_const_param_outline_rad = 0,
+    fe_const_param_outline_sharpness = 1,
+
+    fe_const_param_df_fill_rad = 0,
+    fe_const_param_stroke_sharpness = 0,
+};
+
 typedef struct  fe_node_image
 {
     fe_node base;
@@ -124,6 +143,7 @@ typedef struct  fe_node_out
 typedef struct  fe_node_distance_field
 {
     fe_node base;
+    float rad;
 } fe_node_distance_field;
 
 
