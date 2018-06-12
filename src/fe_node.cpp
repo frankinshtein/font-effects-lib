@@ -119,25 +119,10 @@ public:
         const PixDist* pp = (PixDist*)data;
 
         float d1 = pp->d1;
-        float d2 = pp->d2;
+        
 
-
-        //if (d1 > 0)
-        //    d2 = d2 + 1;
-        if (d1 == 0)
-            d2 = 0;
-
-        //d2 = 0;
-
-        float dist = d1;// -d2;
-                        //if (d1 > 0 && dist < 0)
-                        //  dist = d1;
-                        //if (dist < 0)
-                        //dist = 0;
-        dist = 60.0f * s + (dist) * 3.5f;// -d2;
-                                         //dist *= s;
-
-                                         //float dist = x * plane.a + y * plane.b - plane.d + d;
+        float dist = d1;
+        dist = 60.0f * s + (dist) * 3.5f;
 
         int gx = int(dist * plane.scale);
         if (gx >= image.w)
@@ -148,53 +133,6 @@ public:
         gp.getPixel(asImage(&image)->getPixelPtr(gx, 0), g, OPERATOR_ARGS_PASS);
 
         float c = dist;
-
-        /*
-        if (dist <= 0)
-        {
-        float f = (-dist - 1);
-        int a = 255 - f * (255 / 2);
-        if (a < 0)
-        a = 0;
-        if (a > 255)
-        a = 255;
-        g.a = a;
-        }
-        else
-        g.a = 255;
-
-        if (dist > 0)
-        {
-        float f = (dist - 1);
-        int a = 255 - f * (255 / 2);
-        if (a < 0)
-        a = 0;
-        if (a > 255)
-        a = 255;
-        g.a = a;
-        }
-        */
-
-        /*
-        //shadows test
-        int z = 255;
-        float px = pp->x - x;
-        float py = pp->y - y;
-        float n = sqrtf(px*px + py*py);
-        px /= n;
-        py /= n;
-
-        px = (px + 1)/2.0f;
-
-        float cp = px * 120 + 130;
-        z = cp;
-
-
-
-        p.r = (g.r * z)/255;
-        p.g = (g.g * z) / 255;
-        p.b = (g.b * z)/255;
-        */
 
         p.r = g.r;
         p.g = g.g;
@@ -482,155 +420,6 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
 #undef V
 }
 
-/*
-static void buildSDF_(const ImageData& src, float rad, float, bool outer, ImageData& dest)
-{
-    char* field = new char[src.w * src.h];
-
-    char* p = field;
-    const int MAXV = 127;
-    for (int y = 0; y < src.h; ++y)
-    {
-        for (int x = 0; x < src.w; ++x)
-        {
-            *p = MAXV;
-            ++p;
-        }
-    }
-
-    int cmpWith = outer ? 0 : 255;
-
-
-    auto V = [ = ](int x, int y)
-    {
-        assert(x >= 0 && x < src.w);
-        assert(y >= 0 && y < src.h);
-        unsigned char v = src.data[x * src.bytespp + y * src.pitch + 3];
-        return v ;
-    };
-
-    auto I = [ = ](int x, int y)
-    {
-        assert(x >= 0 && x < src.w);
-        assert(y >= 0 && y < src.h);
-        unsigned char v = src.data[x * src.bytespp + y * src.pitch + 3];
-        return v != cmpWith;
-    };
-
-    auto d = [ = ](int x, int y) -> char&
-    {
-        assert(x >= 0 && x < src.w);
-        assert(y >= 0 && y < src.h);
-        return field[x + y * src.w];
-    };
-
-    for (int y = 1; y < src.h - 1; ++y)
-    {
-        for (int x = 1; x < src.w - 1; ++x)
-        {
-            bool t = I(x, y);
-            if (t)
-                if (I(x - 1, y) != t || I(x + 1, y) != t ||
-                        I(x, y - 1) != t || I(x, y + 1) != t)
-                    d(x, y) = 0;
-            
-    //        if (I(x - 1, y-1) != t || I(x + 1, y+1) != t ||
-  //              I(x-1, y + 1) != t || I(x + 1, y - 1) != t)
-//                d(x, y) = 0;
-                
-        }
-    }
-
-
-    int d1 = 3;
-    int d2 = 4;
-
-    for (int y = 1; y < src.h - 1; ++y)
-    {
-        for (int x = 1; x < src.w - 1; ++x)
-        {
-
-            if (d(x - 1, y - 1) + d2 < d(x, y))
-                d(x, y) = d(x - 1, y - 1) + d2;
-
-            if (d(x, y - 1) + d1 < d(x, y))
-                d(x, y) = d(x, y - 1) + d1;
-
-            if (d(x + 1, y - 1) + d2 < d(x, y))
-                d(x, y) = d(x + 1, y - 1) + d2;
-
-            if (d(x - 1, y) + d1 < d(x, y))
-                d(x, y) = d(x - 1, y) + d1;
-        }
-    }
-
-    int q = 0;
-
-    for (int y = src.h - 2; y >= 1; --y)
-    {
-        for (int x = src.w - 2; x >= 1; --x)
-        {
-            if (d(x + 1, y) + d1 < d(x, y))
-                d(x, y) = d(x + 1, y) + d1;
-
-            if (d(x - 1, y + 1) + d2 < d(x, y))
-                d(x, y) = d(x - 1, y + 1) + d2;
-
-            if (d(x, y + 1) + d1 < d(x, y))
-                d(x, y) = d(x, y + 1) + d1;
-
-            if (d(x + 1, y + 1) + d2 < d(x, y))
-                d(x, y) = d(x + 1, y + 1) + d2;
-        }
-    }
-
-    PixelR8G8B8A8 pf;
-
-    for (int y = 0; y < src.h; ++y)
-    {
-        for (int x = 0; x < src.w; ++x)
-        {
-            int z = 0;
-            if (I(x, y))
-            {
-                if (outer)
-                    z = 255;
-                else
-                    z = V(x, y);
-            }
-            else
-            {
-                int v = d(x, y);
-                if (v <= rad * rad)
-                {
-                    z = 255;
-                }
-                else
-                {
-                    float distance = sqrtf(float(v));
-                    if (distance < rad + 1)
-                    {
-                        float a = 1.0f - (distance - rad);
-                        z = int(a * 255.0f);
-                    }
-                }
-            }
-
-
-
-            unsigned char* p = dest.getPixelPtr(x, y);
-            Pixel px = initPixel(z, z, z, z);
-            pf.setPixel(p, px);
-        }
-    }
-
-
-    delete[] field;
-}
-*/
-
-
-
 template <class T>
 class PremultPixel
 {
@@ -881,7 +670,7 @@ fe_im fe_get_fill(const fe_node_fill* node, const fe_args* args)
 }
 
 
-fe_im fe_get_fill_radial(const fe_node_fill* node, const fe_args* args)
+fe_im fe_get_fill_radial(const fe_node_fill_radial* node, const fe_args* args)
 {
     fe_im src = get_mixed_image(&node->base, args);
 
@@ -894,56 +683,22 @@ fe_im fe_get_fill_radial(const fe_node_fill* node, const fe_args* args)
 
     fe_apply_grad ag;
 
+        
 
-    if (src.image.format == FE_IMG_DISTANCE)
-    {
-
-        create_grad(&ag, &node->grad, args->size);
-        ag.plane.d *= args->scale;
+    create_grad(&ag, &node->grad, args->size);
+    //ag.plane.d *= args->scale;
 
 
-        operations::op_blit op;
-        PixelR8G8B8A8 destPixel;
+    operations::op_blit op;
+    PixelR8G8B8A8 destPixel;
 
-        PixelDist_GradApply srcPixelFill(ag, args->scale);
+    float rad = node->base.properties_float[fe_const_param_fill_radial_rad] * args->scale;
 
-        //printf("dist apply\n");
-        operations::applyOperationT(op, PremultPixel<PixelDist_GradApply>(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
-    }
-    else
-    {
+    PixelDist_GradApply srcPixelFill(ag, args->scale);
 
-        float sz = args->size / node->grad.plane.scale;
-        int gsize = static_cast<int>(sz * 2); //need more colors for good gradient
-        float gscale = gsize / sz;
-
-        create_grad(&ag, &node->grad, gsize);
-        ag.plane.d *= args->scale;
-
-        float as = gscale;
-
-        ag.plane.a *= as;
-        ag.plane.b *= as;
-        ag.plane.d *= as;
-
-        float D = src.x * ag.plane.a + src.y * ag.plane.b;
-
-
-
-
-        operations::op_blit op;
-        PixelR8G8B8A8 destPixel;
-        if (src.image.bytespp == 1)
-        {
-            PixelR8G8B8A8_GradApply<PixelA8> srcPixelFill(ag, D, args->scale);
-            operations::applyOperationT(op, PremultPixel<PixelR8G8B8A8_GradApply<PixelA8> >(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
-        }
-        else
-        {
-            PixelR8G8B8A8_GradApply<PixelR8G8B8A8> srcPixelFill(ag, D, args->scale);
-            operations::applyOperationT(op, PremultPixel<PixelR8G8B8A8_GradApply<PixelR8G8B8A8> >(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
-        }
-    }
+    //printf("dist apply\n");
+    operations::applyOperationT(op, PremultPixel<PixelDist_GradApply>(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
+    
 
     fe_image_free(&src.image);
     fe_image_free(&ag.image);
