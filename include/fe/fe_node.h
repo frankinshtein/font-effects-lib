@@ -107,7 +107,8 @@ enum fe_const_param
     fe_const_param_df_fill_rad = 0,
     fe_const_param_stroke_sharpness = 0,
 
-    fe_const_param_fill_radial_rad = 0,
+    fe_const_param_fill_radial_rad_outer = 0,
+    fe_const_param_fill_radial_rad_inner = 1,
 };
 
 typedef struct  fe_node_image

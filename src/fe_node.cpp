@@ -679,9 +679,10 @@ class PixelDist_GradApply4Radial
 public:
     fe_apply_grad grad;
     float s;
-    float rad;
+    float radOuter;
+    float radInner;
 
-    PixelDist_GradApply4Radial(const fe_apply_grad& Grad, float S, float Rad) : grad(Grad), s(S), rad(Rad)
+    PixelDist_GradApply4Radial(const fe_apply_grad& Grad, float S, float Outer, float Inner) : grad(Grad), s(S), radOuter(Outer), radInner(Inner)
     {
     }
 
@@ -700,7 +701,7 @@ public:
         const PixDist* pp = (PixDist*)data;
 
 
-        float dist = pp->d1 + rad;
+        float dist = pp->d1 + radOuter;
 
         int gx = int(dist);
         if (gx >= image.w)
@@ -709,13 +710,14 @@ public:
             gx = 0;
 
         gp.getPixel(asImage(&image)->getPixelPtr(gx, 0), g, OPERATOR_ARGS_PASS);
-        int a = getAlphaRad(-pp->d1, rad, 1.0f);
+        int a1 = getAlphaRad(-pp->d1, radOuter, 1.0f);
+        int a2 = getAlphaRad(pp->d1, radInner, 1.0f);
 
         p.r = g.r;
         p.g = g.g;
         p.b = g.b;
 
-        p.a = g.a * a / 255;
+        p.a = g.a * a1  * a2 / 255 / 255;
     }
 
 private:
@@ -737,10 +739,12 @@ fe_im fe_get_fill_radial(const fe_node_fill_radial* node, const fe_args* args)
 
     fe_apply_grad ag;
 
+    const float *props = node->base.properties_float;
     
-    float rad = node->base.properties_float[fe_const_param_fill_radial_rad] * args->scale;
+    float outer = props[fe_const_param_fill_radial_rad_outer] * args->scale;
+    float inner = props[fe_const_param_fill_radial_rad_inner] * args->scale;
 
-    create_grad(&ag, &node->grad, rad * 2);
+    create_grad(&ag, &node->grad, outer + inner);
     //ag.plane.d *= args->scale;
 
 
@@ -749,7 +753,7 @@ fe_im fe_get_fill_radial(const fe_node_fill_radial* node, const fe_args* args)
 
     
 
-    PixelDist_GradApply4Radial srcPixelFill(ag, args->scale, rad);
+    PixelDist_GradApply4Radial srcPixelFill(ag, args->scale, outer, inner);
 
     //printf("dist apply\n");
     operations::applyOperationT(op, PremultPixel<PixelDist_GradApply4Radial>(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
@@ -1284,7 +1288,7 @@ void update_df_rad(const fe_node* node, fe_args* args)
         if (in)
         {
             float &rad = args->cache.images[in->index].df_rad;
-            rad = std::max(rad, node->properties_float[fe_const_param_fill_radial_rad]);
+            rad = std::max(rad, node->properties_float[fe_const_param_fill_radial_rad_outer]);
         }
     }
 
