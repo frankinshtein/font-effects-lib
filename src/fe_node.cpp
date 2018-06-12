@@ -148,6 +148,33 @@ private:
 
 
 
+int getAlphaRad(float dist, float _rad, float _sharp)
+{
+
+    int z = 0;
+    if (dist < 0)
+    {
+        z = 255;
+    }
+    else
+    {
+        if (dist < _rad)
+        {
+            z = 255;
+        }
+        else
+        {
+            if (dist < _rad + _sharp)
+            {
+                float a = (_sharp - (dist - _rad)) / _sharp;
+                z = int(a * 255.0f);
+            }
+        }
+    }
+
+    return z;
+}
+
 class PixelDist_apply
 {
 public:
@@ -178,33 +205,8 @@ public:
     {
         const PixDist* pp = (PixDist*)data;
 
-        float d1 = pp->d1;
 
-        float dist = -d1;
-        if (inv)
-            dist = -dist;
-        
-        int z = 0;
-        if (dist < 0)
-        {
-            z = 255;
-        }
-        else
-        {
-            if (dist < _rad)
-            {
-                z = 255;
-            }
-            else
-            {
-                if (dist < _rad + _sharp)
-                {
-                    float a = (_sharp - (dist - _rad))/ _sharp;
-                    z = int(a * 255.0f);
-                }
-            }
-        }
-
+        int z = getAlphaRad(-pp->d1, _rad, _sharp);
 
         p.r = 255;
         p.g = 255;
@@ -670,6 +672,58 @@ fe_im fe_get_fill(const fe_node_fill* node, const fe_args* args)
 }
 
 
+
+
+class PixelDist_GradApply4Radial
+{
+public:
+    fe_apply_grad grad;
+    float s;
+    float rad;
+
+    PixelDist_GradApply4Radial(const fe_apply_grad& Grad, float S, float Rad) : grad(Grad), s(S), rad(Rad)
+    {
+    }
+
+    ~PixelDist_GradApply4Radial()
+    {
+
+    }
+
+    void getPixel(GET_PIXEL_ARGS) const
+    {
+        PixelR8G8B8A8 gp;
+        Pixel g;
+
+        const fe_image& image = grad.image;
+
+        const PixDist* pp = (PixDist*)data;
+
+
+        float dist = pp->d1 + rad;
+
+        int gx = int(dist);
+        if (gx >= image.w)
+            gx = image.w - 1;
+        if (gx < 0)
+            gx = 0;
+
+        gp.getPixel(asImage(&image)->getPixelPtr(gx, 0), g, OPERATOR_ARGS_PASS);
+        int a = getAlphaRad(-pp->d1, rad, 1.0f);
+
+        p.r = g.r;
+        p.g = g.g;
+        p.b = g.b;
+
+        p.a = g.a * a / 255;
+    }
+
+private:
+    PixelDist_GradApply4Radial(const PixelDist_GradApply4Radial&);
+    void operator = (const PixelDist_GradApply4Radial&);
+};
+
+
 fe_im fe_get_fill_radial(const fe_node_fill_radial* node, const fe_args* args)
 {
     fe_im src = get_mixed_image(&node->base, args);
@@ -683,21 +737,22 @@ fe_im fe_get_fill_radial(const fe_node_fill_radial* node, const fe_args* args)
 
     fe_apply_grad ag;
 
-        
+    
+    float rad = node->base.properties_float[fe_const_param_fill_radial_rad] * args->scale;
 
-    create_grad(&ag, &node->grad, args->size);
+    create_grad(&ag, &node->grad, rad * 2);
     //ag.plane.d *= args->scale;
 
 
     operations::op_blit op;
     PixelR8G8B8A8 destPixel;
 
-    float rad = node->base.properties_float[fe_const_param_fill_radial_rad] * args->scale;
+    
 
-    PixelDist_GradApply srcPixelFill(ag, args->scale);
+    PixelDist_GradApply4Radial srcPixelFill(ag, args->scale, rad);
 
     //printf("dist apply\n");
-    operations::applyOperationT(op, PremultPixel<PixelDist_GradApply>(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
+    operations::applyOperationT(op, PremultPixel<PixelDist_GradApply4Radial>(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
     
 
     fe_image_free(&src.image);
@@ -808,7 +863,7 @@ fe_im fe_get_distance_field_auto(const fe_node_distance_field* node, const fe_ar
     fe_im src = get_mixed_image(&node->base, args);
 
 
-    float rad = args->cache.images[node->base.index].df_rad * sqrtf(args->scale);
+    float rad = args->cache.images[node->base.index].df_rad * args->scale;
 
     bool outer = rad > 0;
     if (!outer)
