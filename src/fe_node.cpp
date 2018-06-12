@@ -441,8 +441,7 @@ public:
 
 static void create_grad(fe_apply_grad* dest, const fe_grad* gr, int size)
 {
-    fe_gradient_create(&dest->image, size, 1, gr->colors, gr->colors_pos, gr->colors_num, gr->alpha, gr->alpha_pos, gr->alpha_num);
-    dest->plane = gr->plane;
+    fe_gradient_create(&dest->image, size, 1, gr->colors, gr->colors_pos, gr->colors_num, gr->alpha, gr->alpha_pos, gr->alpha_num);    
 }
 
 
@@ -619,6 +618,7 @@ fe_im fe_get_fill(const fe_node_fill* node, const fe_args* args)
     {
 
         create_grad(&ag, &node->grad, args->size);
+        ag.plane = node->plane;
         ag.plane.d *= args->scale;
 
 
@@ -633,11 +633,12 @@ fe_im fe_get_fill(const fe_node_fill* node, const fe_args* args)
     else
     {
 
-        float sz = args->size / node->grad.plane.scale;
+        float sz = args->size / node->plane.scale;
         int gsize = static_cast<int>(sz * 2); //need more colors for good gradient
         float gscale = gsize / sz;
 
         create_grad(&ag, &node->grad, gsize);
+        ag.plane = node->plane;
         ag.plane.d *= args->scale;
 
         float as = gscale;
@@ -1166,10 +1167,10 @@ fe_node_fill* fe_node_fill_alloc()
     node->grad.alpha_pos[0] = 0;
 
 
-    node->grad.plane.a = 0;
-    node->grad.plane.b = 1;
-    node->grad.plane.d = 0;
-    node->grad.plane.scale = 1;
+    node->plane.a = 0;
+    node->plane.b = 1;
+    node->plane.d = 0;
+    node->plane.scale = 1;
 
     return node;
 }
@@ -1186,13 +1187,7 @@ fe_node_fill_radial* fe_node_fill_radial_alloc()
     node->grad.alpha_num = 1;
     node->grad.alpha[0] = 255;
     node->grad.alpha_pos[0] = 0;
-
-
-    node->grad.plane.a = 0;
-    node->grad.plane.b = 1;
-    node->grad.plane.d = 0;
-    node->grad.plane.scale = 1;
-
+    
     return node;
 }
 

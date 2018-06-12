@@ -51,8 +51,6 @@ typedef struct fe_grad
     unsigned char alpha[FE_GRAD_MAX_COLORS];
     float alpha_pos[FE_GRAD_MAX_COLORS];
     int alpha_num;
-
-    fe_plane plane;
 } fe_grad;
 
 FONT_EFFECT_EXPORT

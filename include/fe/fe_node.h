@@ -127,7 +127,9 @@ typedef struct  fe_node_image_fixed
 typedef struct  fe_node_fill
 {
     fe_node base;
+
     fe_grad grad;
+    fe_plane plane;
 
 } fe_node_fill;
 

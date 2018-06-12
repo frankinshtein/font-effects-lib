@@ -284,10 +284,11 @@ fe_node* fe_load_node(fe_state& s)
                 grad->alpha_pos[i] = READ_FLOAT(s);
             }
 
-            grad->plane.a = READ_FLOAT(s);
-            grad->plane.b = READ_FLOAT(s);
-            grad->plane.d = READ_FLOAT(s);
-            grad->plane.scale = READ_FLOAT(s);
+            fe_plane &plane = nf->plane;
+            plane.a = READ_FLOAT(s);
+            plane.b = READ_FLOAT(s);
+            plane.d = READ_FLOAT(s);
+            plane.scale = READ_FLOAT(s);
 
         } break;
 
@@ -329,11 +330,6 @@ fe_node* fe_load_node(fe_state& s)
 
                 grad->alpha_pos[i] = READ_FLOAT(s);
             }
-
-            grad->plane.a = READ_FLOAT(s);
-            grad->plane.b = READ_FLOAT(s);
-            grad->plane.d = READ_FLOAT(s);
-            grad->plane.scale = READ_FLOAT(s);
 
         } break;
 
