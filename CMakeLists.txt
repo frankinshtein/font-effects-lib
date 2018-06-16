@@ -26,6 +26,7 @@ set(SOURCES
 	${SOURCE_DIR}/fe_effect.cpp
 	${SOURCE_DIR}/fe_node.cpp
 	${SOURCE_DIR}/fe_node_custom.cpp
+	${SOURCE_DIR}/fe_node_effects.cpp
 	${SOURCE_DIR}/fe_bundle.cpp
 	${SOURCE_DIR}/fe_gradient.cpp
 	${SOURCE_DIR}/ImageData.cpp
