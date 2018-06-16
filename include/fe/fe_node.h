@@ -90,6 +90,7 @@ enum fe_node_type
     fe_node_type_stroke_simple = 10,
     fe_node_type_distance_field_auto = 11,
     fe_node_type_fill_radial = 12,
+    fe_node_type_light = 30,
     fe_node_type_out = 50,
     fe_node_type_source_text = 60,
     fe_node_type_out_group = 61,
@@ -173,7 +174,7 @@ FONT_EFFECT_EXPORT fe_node_image*           fe_node_image_alloc();
 FONT_EFFECT_EXPORT fe_node_image_fixed*     fe_node_image_fixed_alloc();
 FONT_EFFECT_EXPORT fe_node_mix*             fe_node_mix_alloc();
 FONT_EFFECT_EXPORT fe_node*                 fe_node_stroke_simple_alloc();
-FONT_EFFECT_EXPORT fe_node*                 fe_node_subtract_alloc();
+FONT_EFFECT_EXPORT fe_node*                 fe_node_light_alloc();
 FONT_EFFECT_EXPORT fe_node_out*             fe_node_out_alloc();
 FONT_EFFECT_EXPORT fe_node_outline*         fe_node_outline_alloc();
 FONT_EFFECT_EXPORT fe_node_distance_field*  fe_node_distance_field_alloc();
@@ -195,10 +196,10 @@ void _fe_node_connect(const fe_node*, fe_node*, int pin);
 FONT_EFFECT_EXPORT int     fe_node_get_in_node_id(const fe_node*, int);
 
 FONT_EFFECT_EXPORT
-fe_im fe_get_fill(const fe_node_fill* node, const fe_args* args);
+fe_im fe_node_fill_get_image(const fe_node_fill* node, const fe_args* args);
 
 FONT_EFFECT_EXPORT
-fe_im fe_get_image(const fe_node_image* node, const fe_args* args);
+fe_im fe_node_image_get_image(const fe_node_image* node, const fe_args* args);
 
 FONT_EFFECT_EXPORT
 bool fe_node_apply(
