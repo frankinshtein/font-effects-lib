@@ -132,8 +132,6 @@ public:
 
         gp.getPixel(asImage(&image)->getPixelPtr(gx, 0), g, OPERATOR_ARGS_PASS);
 
-        float c = dist;
-
         p.r = g.r;
         p.g = g.g;
         p.b = g.b;
@@ -184,7 +182,7 @@ public:
     float _sharp;
     bool inv;
 
-    PixelDist_apply(float rad, float sharp, float S) : _rad(rad), _sharp(1.0f / sharp), _s(S), inv(false)
+    PixelDist_apply(float rad, float sharp, float S) : _s(S), _rad(rad), _sharp(1.0f / sharp), inv(false)
     {
         /*
         if (rad < 0)
@@ -239,7 +237,7 @@ static void buildSDF(const ImageData& src, float rad, float sharp, bool outer, I
     int h = src.h;
 
 
-    int cmpWith = 0;
+    //int cmpWith = 0;
 
     int off = 0;
     if (src.bytespp == 4)
@@ -984,7 +982,7 @@ fe_im fe_get_stroke_simple(const fe_node* node, const fe_args* args)
             int qx = x;// +1;
             int qy = y;// +1;
 
-            int* p = data;
+            
             data[qy * nw + qx]     += static_cast<int>(v * f);
             data[qy * nw + qx + 1] += static_cast<int>(v * z);
             data[qy * nw + qx + 2] += static_cast<int>(v * f);
@@ -1242,29 +1240,6 @@ void _fe_node_free(fe_node* node)
 void _fe_node_connect(const fe_node* src, fe_node* dest, int pin)
 {
     dest->in[pin].node = src;
-
-    if (src->type == fe_node_type_distance_field)
-    {
-        float rad = 0;
-
-        if (dest->type == fe_node_type_outline)
-        {
-            fe_node_outline *nd = (fe_node_outline *)dest;
-            //nd->base
-            //onode->base.properties_float[0]
-        }
-
-        if (dest->type == fe_node_type_fill)
-        {
-            fe_node_fill *nd = (fe_node_fill*)dest;
-            //nd->
-            //onode->base.properties_float[0]
-        }
-
-
-        fe_node_distance_field *dfnode = (fe_node_distance_field *)src;
-        //dfnode->rad = std::max(rad, dfnode->rad);
-    }
 }
 
 int fe_node_get_in_node_id(const fe_node* node, int i)

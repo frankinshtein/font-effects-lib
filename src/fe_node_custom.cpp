@@ -59,7 +59,7 @@ fe_im fe_get_custom_image(const fe_node* node, const fe_args* args)
             int qx = x;// +1;
             int qy = y;// +1;
 
-            int* p = data;
+            
             data[qy * nw + qx    ] += static_cast<int>(v * f);
             data[qy * nw + qx + 1] += static_cast<int>(v * z);
             data[qy * nw + qx + 2] += static_cast<int>(v * f);

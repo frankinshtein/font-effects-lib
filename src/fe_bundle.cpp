@@ -168,6 +168,7 @@ static int read_int(fe_state& s)
 #define READ_FLOAT(state) read_float(state); CHECK_ERR()
 #define READ_INT(state)   read_int(s); CHECK_ERR()
 
+/*
 static void* read_token_check(fe_state& s, const char* str)
 {
     read_token(s);
@@ -178,6 +179,7 @@ static void* read_token_check(fe_state& s, const char* str)
 
     return 0;
 }
+ */
 
 static void parse_color(const char* str, fe_color* c)
 {

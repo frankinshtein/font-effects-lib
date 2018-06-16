@@ -80,12 +80,8 @@ namespace fe
     public:
         void getPixel(GET_PIXEL_ARGS) const
         {
-            if (x == 4 && y == 4)
-                int qwewq = 0;
             float d1 = *(float*)data;
             float d2 = *((float*)data + 1);
-            if (d2 > 0)
-                int qw = 0;
             int t = int((d1 - d2) * 10);
             int f = t;
             if (f < 0)

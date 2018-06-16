@@ -31,7 +31,6 @@ void image_free_malloc(fe_image* im)
 
 void fe_image_create(fe_image* im, int w, int h, FE_IMAGE_FORMAT f)
 {
-    int i = sizeof(*im);
     im->w = w;
     im->h = h;
     im->format = f;
