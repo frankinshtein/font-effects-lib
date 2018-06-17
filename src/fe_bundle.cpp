@@ -8,7 +8,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <locale.h>
 //#include <windows.h>
+
 
 
 /*
@@ -151,11 +153,13 @@ static void read_fixed(fe_state& s, const char* str)
     }
 }
 
+_locale_t plocale = _create_locale(LC_ALL, "C");
+
+
 static float read_float(fe_state& s)
 {
     read_token(s);
-    float v = 0;
-    sscanf(s.token, "%f", &v);
+    float v = _atof_l(s.token, plocale);
     return v;
 }
 
