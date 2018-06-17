@@ -164,6 +164,9 @@ static float read_float(fe_state& s)
         while (true)
         {
             char p = *c;
+            if (!p)
+                break;
+
             if (p == '.')
                 *c = dp;
             ++c;
