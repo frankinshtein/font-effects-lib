@@ -12,7 +12,6 @@
 //#include <windows.h>
 
 
-
 /*
 FILE *f = fopen("d:/log.txt", "w");
 
@@ -153,13 +152,25 @@ static void read_fixed(fe_state& s, const char* str)
     }
 }
 
-_locale_t plocale = _create_locale(LC_ALL, "C");
-
-
 static float read_float(fe_state& s)
 {
     read_token(s);
-    float v = _atof_l(s.token, plocale);
+    
+    struct lconv* lc = localeconv();
+    if (lc)
+    {
+        char *c = s.token;
+        char dp = *lc->decimal_point;
+        while (true)
+        {
+            char p = *c;
+            if (p == '.')
+                *c = dp;
+            ++c;
+        }        
+    }
+
+    float v = atof(s.token);
     return v;
 }
 
