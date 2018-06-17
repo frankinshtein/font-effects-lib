@@ -61,7 +61,7 @@ fe_im get_image(const fe_node* node, const fe_args* args)
 
 #ifdef SAVE_NODES
     char str[255];
-    sprintf(str, "d:/temp/im/%d.tga", node->id);
+    sprintf(str, "../temp/%d.tga", node->id);
     fe_image_save_tga(&r.image, str);
 #endif
 
