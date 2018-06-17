@@ -10,3 +10,4 @@ fe_im fe_node_distance_field_auto_get_image(const fe_node_distance_field* node, 
 fe_im fe_node_subtract_get_image(const fe_node* node, const fe_args* args);
 fe_im fe_node_light_get_image(const fe_node* node, const fe_args* args);
 fe_im fe_node_fill_radial_get_image(const fe_node_fill_radial* node, const fe_args* args);
+fe_im fe_node_fill_get_image(const fe_node_fill* node, const fe_args* args);

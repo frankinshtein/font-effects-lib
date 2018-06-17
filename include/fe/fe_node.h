@@ -196,9 +196,6 @@ void _fe_node_connect(const fe_node*, fe_node*, int pin);
 FONT_EFFECT_EXPORT int     fe_node_get_in_node_id(const fe_node*, int);
 
 FONT_EFFECT_EXPORT
-fe_im fe_node_fill_get_image(const fe_node_fill* node, const fe_args* args);
-
-FONT_EFFECT_EXPORT
 fe_im fe_node_image_get_image(const fe_node_image* node, const fe_args* args);
 
 FONT_EFFECT_EXPORT
