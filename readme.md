@@ -93,6 +93,7 @@ https://github.com/frankinshtein/font-effects-lib/blob/master/test/main.cpp
 Emscripten Web Demo:
 http://oxygine.org/font_effects/HelloFreeType.html
 
-## Download Editor
+## Download Editor (JAVA should be installed)
 - [Editor for Windows](https://www.dropbox.com/s/4j3zfraj2p6xjqb/FontEffects_win.zip?dl=0)
 - [Editor for MacOSX](https://www.dropbox.com/s/9tuz8aenclcn4sl/FontEffects_osx.zip?dl=0)
+- [Editor for Linux](https://www.dropbox.com/s/tyg0yg3q79j511a/FontEffects_linux.zip?dl=0)
