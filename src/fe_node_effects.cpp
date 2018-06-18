@@ -732,8 +732,6 @@ fe_im get_mixed_image(const fe_node* node, const fe_args* args)
 }
 
 
-
-
 class PixelDist_GradApply4Radial
 {
 public:
@@ -805,17 +803,13 @@ fe_im fe_node_fill_radial_get_image(const fe_node_fill_radial* node, const fe_ar
     float inner = props[fe_const_param_fill_radial_rad_inner] * args->scale;
 
     create_grad(&ag, &node->grad, outer + inner);
-    //ag.plane.d *= args->scale;
-
+    
 
     operations::op_blit op;
     PixelR8G8B8A8 destPixel;
 
 
-
     PixelDist_GradApply4Radial srcPixelFill(ag, args->scale, outer, inner);
-
-    //printf("dist apply\n");
     operations::applyOperationT(op, PremultPixel<PixelDist_GradApply4Radial>(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
 
 
@@ -999,45 +993,113 @@ fe_im fe_node_subtract_get_image(const fe_node* node, const fe_args* args)
     return base;
 }
 
+
+
+class PixelDist_Light
+{
+public:
+    fe_apply_grad grad;
+    float s;
+    float radOuter;
+    float radInner;
+
+    PixelDist_Light(const fe_apply_grad& Grad, float S/*, float Outer, float Inner*/) : grad(Grad), s(S)//, radOuter(Outer), radInner(Inner)
+    {
+    }
+
+    ~PixelDist_Light()
+    {
+
+    }
+
+    void getPixel(GET_PIXEL_ARGS) const
+    {
+        PixelR8G8B8A8 gp;
+        Pixel g;
+
+        //const fe_image& image = grad.image;
+
+        const PixDist* pp = (PixDist*)data;
+
+
+        float dist = pp->d1 + radOuter;
+        /*
+        int gx = int(dist);
+        if (gx >= image.w)
+            gx = image.w - 1;
+        if (gx < 0)
+            gx = 0;
+
+        gp.getPixel(asImage(&image)->getPixelPtr(gx, 0), g, OPERATOR_ARGS_PASS);
+        */
+
+        float dx = pp->x - x;
+        float dy = pp->y - y;
+
+        float len = sqrt(dx * dx + dy * dy);
+        dx /= len;
+        dy /= len;
+
+        float lx = 0.707f;
+        float ly = 0.707f;
+
+        float c = dx * lx + dy * ly;
+
+        //c = (c + 1) / 2;
+
+        //if (c > 1.0f)
+        //    c = 1.0f;
+
+        //int a1 = getAlphaRad(-pp->d1, radOuter, 1.0f);
+        //int a2 = getAlphaRad(pp->d1, radInner, 1.0f);
+
+        p.r = c * 255;
+        p.g = c * 255;
+        p.b = c * 255;
+
+        if (pp->d1 == 0.0f)
+            p.a = (1.0f - pp->d2) * 255.0f;
+        else if (pp->d1 > 0)
+            p.a = 255;
+        else p.a = 0;
+    }
+
+private:
+    PixelDist_Light(const PixelDist_Light&);
+    void operator = (const PixelDist_Light&);
+};
+
 fe_im fe_node_light_get_image(const fe_node* node, const fe_args* args)
 {
-    fe_im res[FE_MAX_PINS];
-    int num = get_pins(node, args, res, FE_MAX_PINS);
-    if (num == 0)
-    {
-        fe_im empty;
-        fe_im_empty(empty);
-        return  empty;
-    }
+    fe_im src = get_mixed_image(node, args);
 
-    fe_im base = res[0];
+    fe_im dest;
+    dest.x = src.x;
+    dest.y = src.y;
 
-    for (int i = 1; i < num; ++i)
-    {
-        fe_im& c = res[i];
-
-        int r = MIN(base.image.w + base.x, c.image.w + c.x);
-        int b = MIN(base.image.h + base.y, c.image.h + c.y);
-
-        int t = MAX(base.y, c.y);
-        int l = MAX(base.x, c.x);
-
-        int tw = r - l;
-        int th = b - t;
-
-        ImageData destRC = asImage(&base.image)->getRect(l - base.x, t - base.y, tw, th);
-        ImageData srcRC = asImage(&c.image)->getRect(l - c.x, t - c.y, tw, th);
-
-        operations::op_blend_subtract op;
-        operations::applyOperation(op, srcRC, destRC);
-    }
+    fe_image_create(&dest.image, src.image.w, src.image.h, FE_IMG_R8G8B8A8);
 
 
-    for (int i = 1; i < num; ++i)
-    {
-        fe_im& c = res[i];
-        fe_image_free(&c.image);
-    }
+    fe_apply_grad ag;
 
-    return base;
+    //const float *props = node->properties_float;
+
+    //float outer = props[fe_const_param_fill_radial_rad_outer] * args->scale;
+    //float inner = props[fe_const_param_fill_radial_rad_inner] * args->scale;
+
+    //create_grad(&ag, &node->grad, outer + inner);
+
+
+    operations::op_blit op;
+    PixelR8G8B8A8 destPixel;
+
+
+    PixelDist_Light srcPixelFill(ag, args->scale);
+    operations::applyOperationT(op, PremultPixel<PixelDist_Light>(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
+
+
+    fe_image_free(&src.image);
+    //fe_image_free(&ag.image);
+    //fe_image_safe_tga(&dest.image, "d:/a.tga");
+    return dest;
 }
