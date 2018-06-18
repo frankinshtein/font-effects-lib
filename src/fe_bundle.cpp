@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <locale.h>
 //#include <windows.h>
 
 
@@ -156,8 +157,25 @@ static void read_fixed(fe_state& s, const char* str)
 static float read_float(fe_state& s)
 {
     read_token(s);
-    float v = 0;
-    sscanf(s.token, "%f", &v);
+    
+    struct lconv* lc = localeconv();
+    if (lc)
+    {
+        char *c = s.token;
+        char dp = *lc->decimal_point;
+        while (true)
+        {
+            char p = *c;
+            if (!p)
+                break;
+
+            if (p == '.')
+                *c = dp;
+            ++c;
+        }        
+    }
+
+    float v = atof(s.token);
     return v;
 }
 
