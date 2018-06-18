@@ -148,27 +148,39 @@ private:
 int getAlphaRad(float dist, float _rad, float _sharp)
 {
     int z = 0;
-    if (dist < 0)
+
+    //if (dist < _rad)
     {
-        z = 255;
-    } 
-    else
+    //    z = 255;
+    }
+    //else
     {
-        if (dist < _rad)
-        {
-            z = 255;
-        }
-        else
-        {
-            if (dist < _rad + _sharp)
-            {
-                float a = (_sharp - (dist - _rad)) / _sharp;
-                z = int(a * 255.0f);
-            }
-        }
+        //float a = (_sharp - (dist - _rad)) / _sharp;
+        //float a = 1.0f - (dist - _rad) / _sharp;
+        //float a = 1.0f - dist / _sharp + _rad / _sharp;
+        float a = (1.0f + _rad / _sharp) - dist / _sharp;
+        if (a < 0)
+            a = 0.0f;
+        if (a > 1)
+            a = 1.0f;
+        z = int(a * 255.0f);
     }
 
     return z;
+}
+
+int getAlphaRadOpt(float dist, float RadSharp, float sharp)
+{
+    //float a = (_sharp - (dist - _rad)) / _sharp;
+    //float a = 1.0f - (dist - _rad) / _sharp;
+    //float a = 1.0f - dist / _sharp + _rad / _sharp;
+    //float a = (1.0f + _rad / _sharp) - dist / _sharp;
+    float a = RadSharp - dist / sharp;
+    if (a < 0)
+        a = 0;
+    if (a > 1)
+        a = 1.0f;
+    return int(a * 255.0f);
 }
 
 class PixelDist_apply
@@ -735,12 +747,17 @@ class PixelDist_GradApply4Radial
 {
 public:
     fe_apply_grad grad;
-    float s;
     float radOuter;
-    float radInner;
+    float distScale;
 
-    PixelDist_GradApply4Radial(const fe_apply_grad& Grad, float S, float Outer, float Inner) : grad(Grad), s(S), radOuter(Outer), radInner(Inner)
+    float radSharpInner;
+    float radSharpOuter;
+
+    PixelDist_GradApply4Radial(const fe_apply_grad& Grad, float Outer, float Inner, float DistScale) : grad(Grad), radOuter(Outer), distScale(DistScale)
     {
+        float _sharp = 1.0f;
+        radSharpInner = (1.0f + Inner / _sharp);
+        radSharpOuter = (1.0f + Outer / _sharp);
     }
 
     ~PixelDist_GradApply4Radial()
@@ -757,18 +774,15 @@ public:
 
         const PixDist* pp = (PixDist*)data;
 
-
-        float dist = pp->d1 + radOuter;
-
-        int gx = int(dist);
+        int gx = int((pp->d1 + radOuter) * distScale);
         if (gx >= image.w)
             gx = image.w - 1;
         if (gx < 0)
             gx = 0;
 
         gp.getPixel(asImage(&image)->getPixelPtr(gx, 0), g, OPERATOR_ARGS_PASS);
-        int a1 = getAlphaRad(-pp->d1, radOuter, 1.0f);
-        int a2 = getAlphaRad(pp->d1, radInner, 1.0f);
+        int a1 = getAlphaRadOpt(-pp->d1, radSharpOuter, 1.0f);
+        int a2 = getAlphaRadOpt(pp->d1, radSharpInner, 1.0f);
 
         p.r = g.r;
         p.g = g.g;
@@ -804,13 +818,15 @@ fe_im fe_node_fill_radial_get_image(const fe_node_fill_radial* node, const fe_ar
     int sz = outer + inner;
     if (sz < 1)
         sz = 1;
+    float distScale = 4.0f;
+    sz *= distScale;
     create_grad(&ag, &node->grad, sz);
 
     operations::op_blit op;
     PixelR8G8B8A8 destPixel;
 
 
-    PixelDist_GradApply4Radial srcPixelFill(ag, args->scale, outer, inner);
+    PixelDist_GradApply4Radial srcPixelFill(ag, outer, inner, distScale);
     operations::applyOperationT(op, PremultPixel<PixelDist_GradApply4Radial>(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
 
 
@@ -873,11 +889,7 @@ fe_im fe_node_outline_get_image(const fe_node_outline* node, const fe_args* args
     PixelR8G8B8A8 destPixel;
 
     PixelDist_apply srcPixelFill(node->base.properties_float[fe_const_param_outline_rad], node->base.properties_float[fe_const_param_outline_sharpness], args->scale);
-
-    //printf("dist apply\n");
     operations::applyOperationT(op, PremultPixel<PixelDist_apply>(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
-
-
 
     fe_image_free(&src.image);
     //fe_image_safe_tga(&dest.image, "d:/a.tga");
@@ -1004,7 +1016,7 @@ public:
     float radOuter;
     float radInner;
 
-    PixelDist_Light(const fe_apply_grad& Grad, float S/*, float Outer, float Inner*/) : grad(Grad), s(S)//, radOuter(Outer), radInner(Inner)
+    PixelDist_Light(const fe_apply_grad& Grad, float S/*, float Outer, float Inner*/) : grad(Grad), s(S)
     {
     }
 
