@@ -12,6 +12,8 @@ typedef struct fe_effect
     char path_back[256];//todo opt
     float distance;
 
+    struct fe_node* out_node;
+
 	short px, py;
 
     struct fe_node** nodes;

@@ -1,4 +1,6 @@
-#define _CRT_SECURE_NO_WARNINGS
+#ifndef _CRT_SECURE_NO_WARNINGS
+#   define _CRT_SECURE_NO_WARNINGS
+#endif
 
 #include "fe/fe_bundle.h"
 #include "fe/fe_node.h"
@@ -479,7 +481,11 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
         node->index = i;
 
         effect->nodes[i] = node;
-        CHECK_ERR();        
+        CHECK_ERR();      
+
+
+        if (node->type == fe_node_type_out)
+            effect->out_node = node;
     }
 
     read_fixed(s, "@edges");

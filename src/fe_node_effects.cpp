@@ -147,12 +147,11 @@ private:
 
 int getAlphaRad(float dist, float _rad, float _sharp)
 {
-
     int z = 0;
     if (dist < 0)
     {
         z = 255;
-    }
+    } 
     else
     {
         if (dist < _rad)
@@ -804,7 +803,10 @@ fe_im fe_node_fill_radial_get_image(const fe_node_fill_radial* node, const fe_ar
     float outer = props[fe_const_param_fill_radial_rad_outer] * args->scale;
     float inner = props[fe_const_param_fill_radial_rad_inner] * args->scale;
 
-    create_grad(&ag, &node->grad, outer + inner);
+    int sz = outer + inner;
+    if (sz < 1)
+        sz = 1;
+    create_grad(&ag, &node->grad, sz);
     //ag.plane.d *= args->scale;
 
 
