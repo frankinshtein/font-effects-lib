@@ -300,6 +300,62 @@ namespace fe
 
 
 
+
+        template<class T>
+        Pixel getPixel4x(const T& pf, const ImageData *src, int X, int Y)
+        {
+            Pixel p0;
+            Pixel p1;
+            Pixel p2;
+            Pixel p3;
+
+            pf.getPixel(src->getPixelPtr(X, Y), p0, X, Y);
+
+            if (X + 1 < src->w)
+                pf.getPixel(src->getPixelPtr(X + 1, Y), p1, X + 1, Y);
+            else
+                p1.rgba = 0;
+
+            if (Y + 1 < src->h)
+                pf.getPixel(src->getPixelPtr(X, Y + 1), p2, X, Y + 1);
+            else
+                p2.rgba = 0;
+            if (((Y + 1) < src->h) && ((X + 1) < src->w))
+                pf.getPixel(src->getPixelPtr(X + 1, Y + 1), p3, X + 1, Y + 1);
+            else
+                p3.rgba = 0;
+
+            Pixel r;
+            r.r = (p0.r + p1.r + p2.r + p3.r) / 4;
+            r.g = (p0.g + p1.g + p2.g + p3.g) / 4;
+            r.b = (p0.b + p1.b + p2.b + p3.b) / 4;
+            r.a = (p0.a + p1.a + p2.a + p3.a) / 4;
+            return r;
+        }
+
+
+
+
+        template <class SrcPixel, class DestPixel>
+        void downsample(const SrcPixel &srcPixel, const DestPixel &destPixel, const ImageData *src, const ImageData *dest)
+        {
+            int w = dest->w;
+            int h = dest->h;
+
+            for (int y = 0; y < h; ++y)
+            {
+                int Y = y * 2;
+
+                for (int x = 0; x < w; ++x)
+                {
+                    int X = x * 2;
+
+                    Pixel r = getPixel4x(srcPixel, src, X, Y);
+                    destPixel.setPixel(dest->getPixelPtr(x, y), r);
+                }
+            }
+        }
+
 #define FORMAT_OP1(format) case FE_IMG_##format: \
         { \
             Pixel##format d; \

@@ -11,6 +11,7 @@
 #include <limits.h>
 #include <string.h>
 #include "fe_node_effects.h"
+#include "ImageDataOperations.h"
 
 void* _fe_alloc(size_t size);
 void _fe_free(void *ptr);
@@ -379,48 +380,6 @@ bool fe_node_apply(
 
 
 
-template<class T>
-Pixel getPixel4x(const T& pf, const ImageData *src, int X, int Y)
-{
-    Pixel p0;
-    Pixel p1;
-    Pixel p2;
-    Pixel p3;
-
-    pf.getPixel(src->getPixelPtr(X, Y), p0, X, Y);
-    pf.getPixel(src->getPixelPtr(X + 1, Y), p1, X + 1, Y);
-    pf.getPixel(src->getPixelPtr(X, Y + 1), p2, X, Y + 1);
-    pf.getPixel(src->getPixelPtr(X + 1, Y + 1), p3, X + 1, Y + 1);
-
-    Pixel r;
-    r.r = (p0.r + p1.r + p2.r + p3.r) / 4;
-    r.g = (p0.g + p1.g + p2.g + p3.g) / 4;
-    r.b = (p0.b + p1.b + p2.b + p3.b) / 4;
-    r.a = (p0.a + p1.a + p2.a + p3.a) / 4;
-    return r;
-}
-
-template <class SrcPixel, class DestPixel>
-void downsample(const SrcPixel &srcPixel, const DestPixel &destPixel, const ImageData *src, const ImageData *dest)
-{
-    int w = src->w;
-    int h = src->h;
-
-    for (int y = 0; y < h / 2; ++y)
-    {
-        int Y = y * 2;
-
-        for (int x = 0; x < w / 2; ++x)
-        {
-            int X = x * 2;
-
-            Pixel r = getPixel4x(srcPixel, src, X, Y);
-            destPixel.setPixel(dest->getPixelPtr(x, y), r);
-        }
-    }
-}
-
-
 void fe_convert_result(fe_im* src, fe_im* dest, FE_IMAGE_FORMAT dest_format, int convert_options)
 {
     if (dest_format == TF_UNDEFINED)
@@ -435,7 +394,9 @@ void fe_convert_result(fe_im* src, fe_im* dest, FE_IMAGE_FORMAT dest_format, int
 
     if (convert_options & fe_convert_option_downsample2x)
     { 
-        fe_image_create(&dest->image, src->image.w/2, src->image.h/2, dest_format);
+        int nw = (src->image.w + 1) / 2;
+        int nh = (src->image.h + 1) / 2;
+        fe_image_create(&dest->image, nw, nh, dest_format);
 
                 
         PixelR8G8B8A8 src_pf;
@@ -443,13 +404,13 @@ void fe_convert_result(fe_im* src, fe_im* dest, FE_IMAGE_FORMAT dest_format, int
         if (dest_format == FE_IMG_B8G8R8A8)
         {
             PixelB8G8R8A8 dest_pf;
-            downsample(src_pf, dest_pf, srcImage, destImage);
+            fe::operations::downsample(src_pf, dest_pf, srcImage, destImage);
         }
 
         if (dest_format == FE_IMG_R8G8B8A8)
         {
             PixelR8G8B8A8 dest_pf;
-            downsample(src_pf, dest_pf, srcImage, destImage);
+            fe::operations::downsample(src_pf, dest_pf, srcImage, destImage);
         }
 
         dest->x /= 2;
