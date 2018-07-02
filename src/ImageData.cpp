@@ -42,10 +42,10 @@ namespace fe
 
     ImageData ImageData::getRect(int X, int Y, int W, int H) const
     {
-        OX_ASSERT(X >= 0 && X <= w);
-        OX_ASSERT(Y >= 0 && Y <= h);
-        OX_ASSERT(X + W <= w);
-        OX_ASSERT(Y + H <= h);
+        FE_ASSERT(X >= 0 && X <= w);
+        FE_ASSERT(Y >= 0 && Y <= h);
+        FE_ASSERT(X + W <= w);
+        FE_ASSERT(Y + H <= h);
 
         void* ptr = (unsigned char*)data + X * bytespp + Y * pitch;
         ImageData buffer(W, H, pitch, format, ptr);

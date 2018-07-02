@@ -8,14 +8,14 @@ namespace fe
     {
         bool check(const ImageData& src, const ImageData& dest)
         {
-            OX_ASSERT(dest.w == src.w);
-            OX_ASSERT(dest.h == src.h);
-            OX_ASSERT(src.data);
-            OX_ASSERT(dest.data);
+            FE_ASSERT(dest.w == src.w);
+            FE_ASSERT(dest.h == src.h);
+            FE_ASSERT(src.data);
+            FE_ASSERT(dest.data);
             //OX_ASSERT(src.pitch);
             //OX_ASSERT(dest.pitch);
-            OX_ASSERT(src.bytespp);
-            OX_ASSERT(dest.bytespp);
+            FE_ASSERT(src.bytespp);
+            FE_ASSERT(dest.bytespp);
             if (dest.w != src.w ||
                     dest.h != src.h ||
                     !src.data ||
@@ -34,7 +34,7 @@ namespace fe
             if (!check(src, dest))
                 return;
 
-            OX_ASSERT(src.format == dest.format);
+            FE_ASSERT(src.format == dest.format);
 
             int bppPitch = src.w * src.bytespp;
 
@@ -62,7 +62,7 @@ namespace fe
             if (!check(src, dest))
                 return;
 
-            OX_ASSERT(src.format == dest.format);
+            FE_ASSERT(src.format == dest.format);
 
             int bppPitch = src.w * src.bytespp;
 

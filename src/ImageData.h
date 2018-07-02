@@ -13,7 +13,7 @@ namespace fe
             FORMAT_CASE(B8G8R8A8); \
             FORMAT_CASE(DISTANCE); \
         default: \
-            OX_ASSERT(!"unknown format"); \
+            FE_ASSERT(!"unknown format"); \
     }
 
     class ImageData: public fe_image

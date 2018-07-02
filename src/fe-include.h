@@ -19,5 +19,5 @@ public:
 };
 
 
-#define OX_ASSERT(arg) assert(arg)
+#define FE_ASSERT(arg) assert(arg)
 
