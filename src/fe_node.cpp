@@ -154,8 +154,8 @@ fe_node_outline* fe_node_outline_alloc()
 {
     fe_node_outline* node = (fe_node_outline*)_fe_alloc(sizeof(fe_node_outline));
     fe_node_init(&node->base, fe_node_type_outline, (get_node_image)fe_node_outline_get_image);
-    node->base.properties_float[fe_const_param_outline_rad] = 1.0f;
-    node->base.properties_float[fe_const_param_outline_sharpness] = 1.0f;
+    node->base.properties_float[fe_const_param_float_outline_rad] = 1.0f;
+    node->base.properties_float[fe_const_param_float_outline_sharpness] = 1.0f;
 
     return node;
 }
@@ -164,7 +164,7 @@ fe_node_distance_field*  fe_node_distance_field_alloc()
 {
     fe_node_distance_field* node = (fe_node_distance_field*)_fe_alloc(sizeof(fe_node_distance_field));
     fe_node_init(&node->base, fe_node_type_distance_field, (get_node_image)fe_node_distance_field_get_image);
-    node->base.properties_float[fe_const_param_distance_field_rad] = 10.0f;
+    node->base.properties_float[fe_const_param_float_distance_field_rad] = 10.0f;
     return node;
 }
 
@@ -306,7 +306,7 @@ void update_df_rad(const fe_node* node, fe_args* args)
         if (in)
         {
             float &rad = args->cache.images[in->index].df_rad;
-            rad = std::max(rad, node->properties_float[fe_const_param_fill_radial_rad_outer]);
+            rad = std::max(rad, node->properties_float[fe_const_param_float_fill_radial_rad_outer]);
         }
     }
 

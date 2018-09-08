@@ -453,12 +453,8 @@ static void create_grad(fe_apply_grad* dest, const fe_grad* gr, int size)
 }
 
 
-
-fe_im fe_node_stroke_simple_get_image(const fe_node* node, const fe_args* args)
+fe_im fe_apply_stroke_loop(fe_im mixed, const fe_node* node, const fe_args* args)
 {
-    fe_im mixed = get_mixed_image(node, args);
-    // return mixed;
-
     int nw = mixed.image.w + 2;
     int nh = mixed.image.h + 2;
 
@@ -474,7 +470,7 @@ fe_im fe_node_stroke_simple_get_image(const fe_node* node, const fe_args* args)
 
     fe_image src = mixed.image;
 
-    float sp = node->properties_float[fe_const_param_stroke_sharpness];
+    float sp = node->properties_float[fe_const_param_float_stroke_sharpness];
     bool invert = false;
     if (sp < 0)
     {
@@ -589,9 +585,26 @@ fe_im fe_node_stroke_simple_get_image(const fe_node* node, const fe_args* args)
     im.x = mixed.x - 1;
     im.y = mixed.y - 1;
 
-    fe_image_free(&mixed.image);
-
     return im;
+}
+
+fe_im fe_node_stroke_simple_get_image(const fe_node* node, const fe_args* args)
+{
+    fe_im mixed = get_mixed_image(node, args);
+    int loops = node->properties_float[fe_const_param_float_stroke_width] * args->scale;
+    
+    //if (loops == 0)//old versions support
+    //    loops = 1;
+
+    fe_im res = mixed;
+    for (int i = 0; i < loops; ++i)
+    {
+        fe_im res2 = fe_apply_stroke_loop(res, node, args);
+        fe_image_free(&res.image);
+        res = res2;
+    }
+
+    return res;
 }
 
 
@@ -812,8 +825,8 @@ fe_im fe_node_fill_radial_get_image(const fe_node_fill_radial* node, const fe_ar
 
     const float *props = node->base.properties_float;
 
-    float outer = props[fe_const_param_fill_radial_rad_outer] * args->scale;
-    float inner = props[fe_const_param_fill_radial_rad_inner] * args->scale;
+    float outer = props[fe_const_param_float_fill_radial_rad_outer] * args->scale;
+    float inner = props[fe_const_param_float_fill_radial_rad_inner] * args->scale;
 
     int sz = outer + inner;
     if (sz < 1)
@@ -888,7 +901,7 @@ fe_im fe_node_outline_get_image(const fe_node_outline* node, const fe_args* args
     operations::op_blit op;
     PixelR8G8B8A8 destPixel;
 
-    PixelDist_apply srcPixelFill(node->base.properties_float[fe_const_param_outline_rad], node->base.properties_float[fe_const_param_outline_sharpness], args->scale);
+    PixelDist_apply srcPixelFill(node->base.properties_float[fe_const_param_float_outline_rad], node->base.properties_float[fe_const_param_float_outline_sharpness], args->scale);
     operations::applyOperationT(op, PremultPixel<PixelDist_apply>(srcPixelFill), destPixel, *asImage(&src.image), *asImage(&dest.image));
 
     fe_image_free(&src.image);
@@ -900,7 +913,7 @@ fe_im fe_node_distance_field_get_image(const fe_node_distance_field* node, const
 {
     fe_im src = get_mixed_image(&node->base, args);
 
-    float rad = node->base.properties_float[fe_const_param_distance_field_rad] * sqrtf(args->scale);
+    float rad = node->base.properties_float[fe_const_param_float_distance_field_rad] * sqrtf(args->scale);
 
     bool outer = rad > 0;
     if (!outer)
