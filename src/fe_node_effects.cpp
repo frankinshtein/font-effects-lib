@@ -593,8 +593,8 @@ fe_im fe_node_stroke_simple_get_image(const fe_node* node, const fe_args* args)
     fe_im mixed = get_mixed_image(node, args);
     int loops = node->properties_float[fe_const_param_float_stroke_width] * args->scale;
     
-    //if (loops == 0)//old versions support
-    //    loops = 1;
+    if (loops < 1)
+        loops = 1;
 
     fe_im res = mixed;
     for (int i = 0; i < loops; ++i)
