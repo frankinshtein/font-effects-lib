@@ -2,12 +2,13 @@ cmake_minimum_required (VERSION 2.6)
 
 project(font-effects)
 
-OPTION(FE_EXTERNAL_BUILD "FE_EXTERNAL_BUILD" OFF)
+option(FE_EXTERNAL_BUILD "FE_EXTERNAL_BUILD" OFF)
+option(FE_INSTALL "FE_INSTALL" OFF)
 option(FE_TEST_BUILD "FE_TEST_BUILD" ON)
 
-IF( NOT FE_EXTERNAL_BUILD )
+if( NOT FE_EXTERNAL_BUILD )
     SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/${CMAKE_GENERATOR} )    
-ENDIF()
+endif()
 
 SET( INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include )
 SET( SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
@@ -40,8 +41,17 @@ add_library(${PROJECT_NAME}
 	${SOURCES}	
     )
     
+if(FE_INSTALL)
+    install(DIRECTORY include
+            DESTINATION .
+            FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h")
+
+    install(TARGETS ${PROJECT_NAME}
+            ARCHIVE DESTINATION lib)
+endif()    
+    
 if( FE_TEST_BUILD )
-    SET( TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test )
+    set( TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test )
     
     set(TEST_SOURCES
         ${TEST_DIR}/main.cpp
