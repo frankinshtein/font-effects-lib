@@ -591,7 +591,7 @@ fe_im fe_apply_stroke_loop(fe_im mixed, const fe_node* node, const fe_args* args
 fe_im fe_node_stroke_simple_get_image(const fe_node* node, const fe_args* args)
 {
     fe_im mixed = get_mixed_image(node, args);
-    int loops = node->properties_float[fe_const_param_float_stroke_width] * args->scale;
+    int loops = (int)(node->properties_float[fe_const_param_float_stroke_width] * args->scale);
     
     if (loops < 1)
         loops = 1;
@@ -828,11 +828,11 @@ fe_im fe_node_fill_radial_get_image(const fe_node_fill_radial* node, const fe_ar
     float outer = props[fe_const_param_float_fill_radial_rad_outer] * args->scale;
     float inner = props[fe_const_param_float_fill_radial_rad_inner] * args->scale;
 
-    int sz = outer + inner;
+    int sz = int(outer + inner);
     if (sz < 1)
         sz = 1;
     float distScale = 4.0f;
-    sz *= distScale;
+    sz = int(sz * distScale);
     create_grad(&ag, &node->grad, sz);
 
     operations::op_blit op;
@@ -1040,9 +1040,6 @@ public:
 
     void getPixel(GET_PIXEL_ARGS) const
     {
-        PixelR8G8B8A8 gp;
-        Pixel g;
-
         //const fe_image& image = grad.image;
 
         const PixDist* pp = (PixDist*)data;
@@ -1059,10 +1056,10 @@ public:
         gp.getPixel(asImage(&image)->getPixelPtr(gx, 0), g, OPERATOR_ARGS_PASS);
         */
 
-        float dx = pp->x - x;
-        float dy = pp->y - y;
+        float dx = (float)(pp->x - x);
+        float dy = (float)(pp->y - y);
 
-        float len = sqrt(dx * dx + dy * dy);
+        float len = sqrtf(dx * dx + dy * dy);
         dx /= len;
         dy /= len;
 
@@ -1079,13 +1076,13 @@ public:
         //int a1 = getAlphaRad(-pp->d1, radOuter, 1.0f);
         //int a2 = getAlphaRad(pp->d1, radInner, 1.0f);
 
-        p.r = c * 255;
-        p.g = c * 255;
-        p.b = c * 255;
+        p.r = int(c * 255);
+        p.g = int(c * 255);
+        p.b = int(c * 255);
 
         if (pp->d1 == 0.0f)
-            p.a = (1.0f - pp->d2) * 255.0f;
-        else if (pp->d1 > 0)
+            p.a = int( (1.0f - pp->d2) * 255.0f);
+        else if (pp->d1 > 0.0f)
             p.a = 255;
         else p.a = 0;
     }
