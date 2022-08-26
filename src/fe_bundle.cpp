@@ -274,6 +274,7 @@ fe_node* fe_load_node(fe_state& s)
             node = &nf->base;
 
             s.data++;
+            s.size--;
             fe_grad* grad = &nf->grad;
 
             //read colors
@@ -321,6 +322,7 @@ fe_node* fe_load_node(fe_state& s)
             node = &nf->base;
 
             s.data++;
+            s.size--;
             fe_grad* grad = &nf->grad;
 
             //read colors
@@ -530,6 +532,8 @@ void* fe_load_effect(fe_state& s, fe_effect* effect)
     while (*s.data == '*')
     {
         s.data++;
+        s.size--;
+
         read_token(s);
         CHECK_ERR();
 
@@ -569,7 +573,7 @@ fe_bundle*  fe_bundle_load(const void* data_, int size)
         return 0;
 
 
-    char* copy = (char*)_fe_alloc(size + 2);
+    char* copy = (char*)_fe_alloc(size + 1);
     *(copy + size) = 0;
     memcpy(copy, data, size);
 
@@ -578,7 +582,7 @@ fe_bundle*  fe_bundle_load(const void* data_, int size)
     fe_state s;
     s.token = 0;
     s.data = copy;
-    s.size = size + 1;
+    s.size = size;
     s.error = false;
 
     //next_line(s);
